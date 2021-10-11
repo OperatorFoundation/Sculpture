@@ -18,8 +18,8 @@ public indirect enum Type: Codable, Equatable
 
 public struct Structure: Codable, Equatable
 {
-    let name: String
-    let properties: [Property]
+    public let name: String
+    public let properties: [Property]
 
     public init(_ name: String, _ properties: [Property])
     {
@@ -30,8 +30,8 @@ public struct Structure: Codable, Equatable
 
 public struct Property: Codable, Equatable
 {
-    let name: String
-    let type: PropertyType
+    public let name: String
+    public let type: PropertyType
 
     public init(_ name: String, type: PropertyType)
     {
@@ -50,7 +50,7 @@ public indirect enum PropertyType: Codable, Equatable
 
 public struct Sequence: Codable, Equatable
 {
-    let type: Type
+    public let type: Type
 
     public init(_ type: Type)
     {
@@ -67,8 +67,8 @@ public enum BasicType: Codable, Equatable
 
 public struct Choice: Codable, Equatable
 {
-    let name: String
-    let options: [Option]
+    public let name: String
+    public let options: [Option]
 
     public init(_ name: String, _ options: [Option])
     {
@@ -79,8 +79,8 @@ public struct Choice: Codable, Equatable
 
 public struct Option: Codable, Equatable
 {
-    let name: String
-    let types: [PropertyType]
+    public let name: String
+    public let types: [PropertyType]
 
     public init(_ name: String, _ types: [PropertyType])
     {
@@ -91,7 +91,7 @@ public struct Option: Codable, Equatable
 
 public struct ReferenceType: Codable, Equatable
 {
-    let name: String
+    public let name: String
 
     public init(_ name: String)
     {

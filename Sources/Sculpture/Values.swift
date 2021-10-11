@@ -24,8 +24,8 @@ public enum BasicValue: Codable, Equatable
 
 public struct StructureInstance: Codable, Equatable
 {
-    let type: String
-    let values: [PropertyValue]
+    public let type: String
+    public let values: [PropertyValue]
 
     public init(_ type: String, values: [PropertyValue])
     {
@@ -45,9 +45,9 @@ public enum PropertyValue: Codable, Equatable
 
 public struct OptionValue: Codable, Equatable
 {
-    let choice: String
-    let chosen: String
-    let values: [PropertyValue]
+    public let choice: String
+    public let chosen: String
+    public let values: [PropertyValue]
 
     public init(_ choice: String, _ chosen: String, _ values: [PropertyValue])
     {
@@ -59,8 +59,8 @@ public struct OptionValue: Codable, Equatable
 
 public struct SequenceValue: Codable, Equatable
 {
-    let type: String
-    let contents: [Value]
+    public let type: String
+    public let contents: [Value]
 
     public init(_ type: String, _ contents: [Value])
     {
@@ -71,7 +71,7 @@ public struct SequenceValue: Codable, Equatable
 
 public struct ReferenceValue: Codable, Equatable
 {
-    let name: String
+    public let name: String
 
     public init(_ name: String)
     {
