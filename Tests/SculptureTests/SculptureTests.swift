@@ -9,7 +9,7 @@ final class SculptureTests: XCTestCase {
     // Type tests
     func testEntityType()
     {
-        let correct = Entity.type(.basic(.string))
+        let correct = Entity.type(.literal(.basic(.string)))
 
         let data = correct.data
         let maybeResult = Entity(data: data)
@@ -22,7 +22,7 @@ final class SculptureTests: XCTestCase {
 
     func testType()
     {
-        let correct = Type.basic(.string)
+        let correct = Type.literal(.basic(.string))
 
         let data = correct.data
         let maybeResult = Type(data: data)
@@ -99,7 +99,7 @@ final class SculptureTests: XCTestCase {
 
     func testSequence()
     {
-        let correct = Sequence(Type.choice(Choice("TestChoice", [])))
+        let correct = Sequence(Type.literal(.choice(Choice("TestChoice", []))))
 
         let data = correct.data
         let maybeResult = Sequence(data: data)
@@ -210,7 +210,7 @@ final class SculptureTests: XCTestCase {
 
     func testSequenceValueString()
     {
-        let correct = SequenceValue("String", [.basic(.string("test"))])
+        let correct = SequenceValue("String", [.literal(.basic(.string("test")))])
 
         let data = correct.data
         let maybeResult = SequenceValue(data: data)
@@ -222,10 +222,10 @@ final class SculptureTests: XCTestCase {
 
     func testPropertyValueBasicString()
     {
-        let correct = PropertyValue.basic(BasicValue.string("test"))
+        let correct = Value.literal(.basic(BasicValue.string("test")))
 
         let data = correct.data
-        let maybeResult = PropertyValue(data: data)
+        let maybeResult = Value(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
 
@@ -234,7 +234,7 @@ final class SculptureTests: XCTestCase {
 
     func testStructureInstance()
     {
-        let correct = StructureInstance("Test", values: [PropertyValue.basic(.string("test"))])
+        let correct = StructureInstance("Test", values: [Value.literal(.basic(.string("test")))])
 
         let data = correct.data
         let maybeResult = StructureInstance(data: data)
@@ -246,7 +246,7 @@ final class SculptureTests: XCTestCase {
 
     func testValue()
     {
-        let correct = Value.basic(.string("test"))
+        let correct = Value.literal(.basic(.string("test")))
 
         let data = correct.data
         let maybeResult = Value(data: data)
@@ -259,7 +259,7 @@ final class SculptureTests: XCTestCase {
 
     func testEntityValue()
     {
-        let correct = Entity.value(.basic(.string("test")))
+        let correct = Entity.value(.literal(.basic(.string("test"))))
 
         let data = correct.data
         let maybeResult = Entity(data: data)

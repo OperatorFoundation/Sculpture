@@ -11,4 +11,5 @@ public indirect enum Entity: Equatable
 {
     case type(Type)
     case value(Value)
+    case flow(Flow)
 }

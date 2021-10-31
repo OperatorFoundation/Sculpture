@@ -49,7 +49,9 @@ public class SculptureConnection
             case .value:
                 guard let value = Value(data: remainder) else {return nil}
                 return .value(value)
+            case .flow:
+                guard let flow = Flow(data: remainder) else {return nil}
+                return .flow(flow)
         }
-
     }
 }

@@ -11,34 +11,61 @@ let version: UInt8 = 0
 
 enum Entities: UInt8
 {
-    case type = 100
-    case value = 200
+    case type      = 100
+    case value     = 200
+    case flow      = 150
 }
 
 public enum Types: UInt8
 {
     // Types
-    case basic     = 101
-    case structure = 102
-    case choice    = 103
-    case sequence  = 104
-    case reference = 105
+    case basic         = 101
+    case structure     = 102
+    case choice        = 103
+    case sequence      = 104
+    case function      = 106
+    case selector      = 107
+    case interface     = 108
+    case tuple         = 109
+    case optional      = 110
 }
 
 public enum Values: UInt8
 {
     // Values
     case basic     = 201
-    case structure = 202
-    case choice    = 203
-    case sequence  = 204
+    case choice    = 202
+    case function  = 203
+    case optional  = 204
+    case sequence  = 205
+    case structure = 206
+    case tuple     = 207
+}
+
+public enum Flows: UInt8
+{
+    case call   = 151
+    case result = 152
+}
+
+public enum References: UInt8
+{
+    case literal   = 251
+    case reference = 252
+    case named     = 253
 }
 
 enum BasicTypes: UInt8
 {
-    case int    = 10
-    case uint   = 11
-    case string = 12
+    case int    = 11
+    case uint   = 12
+    case string = 13
+}
+
+enum Optionals: UInt8
+{
+    case value = 90
+    case empty = 91
 }
 
 func stringToData(_ string: String) -> Data
@@ -66,6 +93,37 @@ func sliceDataToString(_ data: Data) -> (String, Data)?
     let rest = Data(restSlice)
 
     return (string, rest)
+}
+
+func sliceData(_ data: Data) -> (Data, Data)?
+{
+    guard data.count >= 8 else {return nil}
+
+    let countBytes = Data(data[0..<8])
+    guard let countUint64 = countDataToCount(countBytes) else {return nil}
+    let count = Int(countUint64)
+
+    guard data.count >= count+8 else {return nil}
+    let stringData = Data(data[8..<count+8])
+
+    let restOffset = count + 8
+    let restSlice = data[restOffset...]
+    let rest = Data(restSlice)
+
+    return (stringData, rest)
+}
+
+func sliceDataToUInt64(_ data: Data) -> (UInt64, Data)?
+{
+    guard data.count >= 8 else {return nil}
+
+    let countBytes = Data(data[0..<8])
+    guard let countUint64 = countDataToCount(countBytes) else {return nil}
+
+    let restSlice = data[8...]
+    let rest = Data(restSlice)
+
+    return (countUint64, rest)
 }
 
 func listToData<T>(_ list: [T], totalCount: Bool = false, itemCount: Bool = false) -> Data where T: MaybeDatable
@@ -219,6 +277,9 @@ extension Entity: MaybeDatable
             case .value:
                 guard let value = Value(data: remainder) else {return nil}
                 self = .value(value)
+            case .flow:
+                guard let value = Flow(data: remainder) else {return nil}
+                self = .flow(value)
         }
     }
 
@@ -232,6 +293,10 @@ extension Entity: MaybeDatable
                 return countData + data
             case .value(let value):
                 let data = Entities.value.rawValue.data + value.data
+                let countData = dataToCountData(data)
+                return countData + data
+            case .flow(let value):
+                let data = Entities.flow.rawValue.data + value.data
                 let countData = dataToCountData(data)
                 return countData + data
         }

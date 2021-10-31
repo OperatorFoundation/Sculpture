@@ -15,6 +15,45 @@ extension Type: MaybeDatable
         guard data.count > 1 else {return nil}
 
         let typeByte = data[0]
+        guard let type = References(rawValue: typeByte) else {return nil}
+
+        let rest = Data(data[1...])
+
+        switch type
+        {
+            case .literal:
+                guard let value = LiteralType(data: rest) else {return nil}
+                self = .literal(value)
+            case .reference:
+                guard let value = ReferenceType(data: rest) else {return nil}
+                self = .reference(value)
+            case .named:
+                guard let value = NamedReferenceType(data: rest) else {return nil}
+                self = .named(value)
+        }
+    }
+
+    public var data: Data
+    {
+        switch self
+        {
+            case .literal(let value):
+                return References.literal.rawValue.data + value.data
+            case .reference(let value):
+                return References.reference.rawValue.data + value.data
+            case .named(let value):
+                return References.named.rawValue.data + value.data
+        }
+    }
+}
+
+extension LiteralType: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard data.count > 1 else {return nil}
+
+        let typeByte = data[0]
         guard let type = Types(rawValue: typeByte) else {return nil}
 
         let rest = Data(data[1...])
@@ -33,9 +72,21 @@ extension Type: MaybeDatable
             case .sequence:
                 guard let value = Sequence(data: rest) else {return nil}
                 self = .sequence(value)
-            case .reference:
-                guard let value = ReferenceType(data: rest) else {return nil}
-                self = .reference(value)
+            case .function:
+                guard let value = FunctionSignature(data: rest) else {return nil}
+                self = .function(value)
+            case .selector:
+                guard let value = Selector(data: rest) else {return nil}
+                self = .selector(value)
+            case .interface:
+                guard let value = Interface(data: rest) else {return nil}
+                self = .interfaceType(value)
+            case .tuple:
+                guard let value = TupleType(data: rest) else {return nil}
+                self = .tuple(value)
+            case .optional:
+                guard let value = Optional(data: rest) else {return nil}
+                self = .optional(value)
         }
     }
 
@@ -51,8 +102,16 @@ extension Type: MaybeDatable
                 return Types.sequence.rawValue.data + value.data
             case .choice(let value):
                 return Types.choice.rawValue.data + value.data
-            case .reference(let value):
-                return Types.reference.rawValue.data + value.data
+            case .function(let value):
+                return Types.function.rawValue.data + value.data
+            case .selector(let value):
+                return Types.selector.rawValue.data + value.data
+            case .interfaceType(let value):
+                return Types.interface.rawValue.data + value.data
+            case .tuple(let value):
+                return Types.tuple.rawValue.data + value.data
+            case .optional(let value):
+                return Types.optional.rawValue.data + value.data
         }
     }
 }
@@ -183,7 +242,6 @@ extension PropertyType: MaybeDatable
         let rest = Data(data[1...])
         guard let type = Types(rawValue: typeByte) else {return nil}
 
-
         switch type
         {
             case .basic:
@@ -261,15 +319,152 @@ extension BasicType: MaybeDatable
     }
 }
 
+extension FunctionSignature: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let (parameters, rest): ([Type], Data) = sliceDataToList(data) else {return nil}
+        self.parameters = parameters
+
+        if rest.count > 0
+        {
+            guard let result = Type(data: rest) else {return nil}
+            self.result = result
+        }
+        else
+        {
+            self.result = nil
+        }
+    }
+
+    public var data: Data
+    {
+        var bytes = Data()
+
+        bytes.append(listToData(self.parameters, totalCount: true, itemCount: true))
+
+        if let result = self.result
+        {
+            bytes.append(result.data)
+        }
+
+        return bytes
+    }
+}
+
+extension NamedFunction: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let (name, rest) = sliceDataToString(data) else {return nil}
+        self.name = name
+
+        guard let signature = FunctionSignature(data: rest) else {return nil}
+        self.signature = signature
+    }
+
+    public var data: Data
+    {
+        var bytes = Data()
+
+        bytes.append(stringToData(self.name))
+        bytes.append(self.signature.data)
+
+        return bytes
+    }
+}
+
+extension Interface: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let functions: [NamedFunction] = dataToList(data) else {return nil}
+        self.functions = functions
+    }
+
+    public var data: Data
+    {
+        return listToData(self.functions, totalCount: false, itemCount: true)
+    }
+}
+
+extension TupleType: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let parts: [Type] = dataToList(data) else {return nil}
+        self.parts = parts
+    }
+
+    public var data: Data
+    {
+        return listToData(self.parts, totalCount: false, itemCount: true)
+    }
+}
+
+extension Optional: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let type = Type(data: data) else {return nil}
+        self.type = type
+    }
+
+    public var data: Data
+    {
+        return type.data
+    }
+}
+
 extension ReferenceType: MaybeDatable
 {
     public init?(data: Data)
     {
+        guard let identifier = UInt64(maybeNetworkData: data) else {return nil}
+        self.identifier = identifier
+
+        guard let _ = TypeDatabase.get(identifier: self.identifier) else {return nil}
+    }
+
+    public var data: Data
+    {
+        return self.identifier.data
+    }
+}
+
+extension NamedReferenceType: MaybeDatable
+{
+    public init?(data: Data)
+    {
         self.name = data.string
+
+        guard let _ = NamedTypeDatabase.get(name: self.name) else {return nil}
     }
 
     public var data: Data
     {
         return self.name.data
+    }
+}
+
+extension Selector: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let (name, rest) = sliceDataToString(data) else {return nil}
+        self.name = name
+
+        guard let signature = FunctionSignature(data: rest) else {return nil}
+        self.signature = signature
+    }
+
+    public var data: Data
+    {
+        var data = Data()
+
+        data.append(self.name.data)
+        data.append(self.signature.data)
+
+        return data
     }
 }
