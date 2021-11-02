@@ -9,7 +9,7 @@ import Datable
 
 let version: UInt8 = 0
 
-enum Entities: UInt8
+public enum Entities: UInt8
 {
     case type      = 100
     case value     = 200
@@ -66,6 +66,18 @@ enum Optionals: UInt8
 {
     case value = 90
     case empty = 91
+}
+
+enum Results: UInt8
+{
+    case value = 80
+    case failure = 81
+}
+
+public func countDataToCount(_ data: Data) -> UInt64?
+{
+    guard data.count == 8 else {return nil}
+    return data.maybeNetworkUint64
 }
 
 func stringToData(_ string: String) -> Data
@@ -240,17 +252,11 @@ func sliceDataToEnumChoiceData(_ data: Data) -> (Data, Data)?
     return (itemData, rest)
 }
 
-func dataToCountData(_ data: Data) -> Data
+public func dataToCountData(_ data: Data) -> Data
 {
     let count = data.count
     let countUint64 = UInt64(count)
     return countUint64.maybeNetworkData!
-}
-
-func countDataToCount(_ data: Data) -> UInt64?
-{
-    guard data.count == 8 else {return nil}
-    return data.maybeNetworkUint64
 }
 
 extension Entity: MaybeDatable

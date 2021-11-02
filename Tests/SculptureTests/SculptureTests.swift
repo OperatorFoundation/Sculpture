@@ -109,21 +109,9 @@ final class SculptureTests: XCTestCase {
         XCTAssertEqual(result, correct)
     }
 
-    func testPropertyTypeBasicString()
-    {
-        let correct = PropertyType.basic(.string)
-
-        let data = correct.data
-        let maybeResult = PropertyType(data: data)
-        XCTAssertNotNil(maybeResult)
-        guard let result = maybeResult else {return}
-
-        XCTAssertEqual(result, correct)
-    }
-
     func testPropertyBasicString()
     {
-        let correct = Property("name", type: PropertyType.basic(.string))
+        let correct = Property("name", type: Type.literal(.basic(.string)))
 
         let data = correct.data
         let maybeResult = Property(data: data)
@@ -135,7 +123,11 @@ final class SculptureTests: XCTestCase {
 
     func testStructure()
     {
-        let correct = Structure("Test", [Property("name", type: PropertyType.basic(.string))])
+        let correct = Structure("Test",
+            [
+                Property("name", type: Type.literal(.basic(.string)))
+            ]
+        )
 
         let data = correct.data
         let maybeResult = Structure(data: data)

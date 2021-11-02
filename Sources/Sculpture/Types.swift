@@ -42,22 +42,22 @@ public struct Structure: Codable, Equatable
 public struct Property: Codable, Equatable
 {
     public let name: String
-    public let type: PropertyType
+    public let type: Type
 
-    public init(_ name: String, type: PropertyType)
+    public init(_ name: String, type: Type)
     {
         self.name = name
         self.type = type
     }
 }
 
-public indirect enum PropertyType: Codable, Equatable
-{
-    case basic(BasicType)
-    case structure(String)
-    case sequence(String)
-    case choice(String)
-}
+//public indirect enum PropertyType: Codable, Equatable
+//{
+//    case basic(BasicType)
+//    case structure(String)
+//    case sequence(String)
+//    case choice(String)
+//}
 
 public struct Sequence: Codable, Equatable
 {
@@ -91,9 +91,9 @@ public struct Choice: Codable, Equatable
 public struct Option: Codable, Equatable
 {
     public let name: String
-    public let types: [PropertyType]
+    public let types: [Type]
 
-    public init(_ name: String, _ types: [PropertyType])
+    public init(_ name: String, _ types: [Type])
     {
         self.name = name
         self.types = types
@@ -126,10 +126,12 @@ public struct NamedFunction: Codable, Equatable
 
 public struct Interface: Codable, Equatable
 {
+    public let name: String
     public let functions: [NamedFunction]
 
-    public init(_ functions: [NamedFunction])
+    public init(_ name: String, _ functions: [NamedFunction])
     {
+        self.name = name
         self.functions = functions
     }
 }
@@ -193,23 +195,23 @@ public class TypeDatabase
 public struct NamedReferenceType: Codable, Equatable
 {
     public let name: String
-    public var type: Type?
-    {
-        return NamedTypeDatabase.get(name: self.name)
-    }
+//    public var type: Type?
+//    {
+//        return NamedTypeDatabase.get(name: self.name)
+//    }
 
-    public init?(_ name: String)
+    public init(_ name: String)
     {
-        guard let _ = NamedTypeDatabase.get(name: name) else { return nil }
+//        guard let _ = NamedTypeDatabase.get(name: name) else { return nil }
         self.name = name
     }
 
-    public init(_ name: String, _ type: Type)
-    {
-        self.name = name
-
-        NamedTypeDatabase.put(name: name, type: type)
-    }
+//    public init(_ name: String, _ type: Type)
+//    {
+//        self.name = name
+//
+//        NamedTypeDatabase.put(name: name, type: type)
+//    }
 }
 
 public struct ReferenceType: Codable, Equatable

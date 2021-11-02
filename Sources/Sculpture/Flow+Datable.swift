@@ -65,8 +65,13 @@ extension Call: MaybeDatable
 
         guard let identifierData = self.identifier.maybeNetworkData else {return Data()}
         result.append(identifierData)
+
+        result.append(dataToCountData(self.target.data))
         result.append(self.target.data)
+
+        result.append(dataToCountData(self.selector.data))
         result.append(self.selector.data)
+
         result.append(listToData(self.arguments, totalCount: false, itemCount: true))
 
         return result
@@ -80,10 +85,7 @@ extension Result: MaybeDatable
         guard let (identifier, rest) = sliceDataToUInt64(data) else {return nil}
         self.identifier = identifier
 
-        guard let (type, remainder): (Type, Data) = sliceDataToListItem(rest) else {return nil}
-        self.type = type
-
-        guard let value = Value(data: remainder) else {return nil}
+        guard let value = ResultValue(data: rest) else {return nil}
         self.value = value
     }
 
@@ -93,9 +95,41 @@ extension Result: MaybeDatable
 
         guard let identifierData = self.identifier.maybeNetworkData else {return Data()}
         result.append(identifierData)
-        result.append(self.type.data)
         result.append(self.value.data)
 
         return result
+    }
+}
+
+extension ResultValue: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard data.count > 1 else {return nil}
+
+        let typeByte = data[0]
+        guard let type = Results(rawValue: typeByte) else {return nil}
+
+        let rest = Data(data[1...])
+
+        switch type
+        {
+            case .value:
+                guard let value = Value(data: rest) else {return nil}
+                self = .value(value)
+            case .failure:
+                self = .failure
+        }
+    }
+
+    public var data: Data
+    {
+        switch self
+        {
+            case .value(let value):
+                return Results.value.rawValue.data + value.data
+            case .failure:
+                return Results.failure.rawValue.data
+        }
     }
 }

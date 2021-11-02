@@ -390,7 +390,7 @@ extension NamedReferenceValue: MaybeDatable
     {
         self.name = data.string
 
-        guard let _ = NamedValueDatabase.get(name: self.name) else {return nil}
+//        guard let _ = NamedValueDatabase.get(name: self.name) else {return nil}
     }
 
     public var data: Data

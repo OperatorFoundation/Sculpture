@@ -34,8 +34,19 @@ public struct Call: Codable, Equatable
 public struct Result: Codable, Equatable
 {
     public let identifier: UInt64
-    public let type: Type
-    public let value: Value
+    public let value: ResultValue
+
+    public init(_ identifier: UInt64, _ value: ResultValue)
+    {
+        self.identifier = identifier
+        self.value = value
+    }
+}
+
+public enum ResultValue: Codable, Equatable
+{
+    case value(Value)
+    case failure
 }
 
 public class CallDatabase
@@ -60,5 +71,37 @@ public class CallDatabase
     static public func get(identifier: UInt64) -> Call?
     {
         return database[identifier]
+    }
+
+    static public func delete(identifier: UInt64)
+    {
+        database.removeValue(forKey: identifier)
+    }
+}
+
+public typealias FunctionImplementation = (Value?, [Value]) -> Value?
+
+public struct InterfaceImplementation
+{
+    let interface: Interface
+    let functions: [NamedFunction: FunctionImplementation]
+
+    public init(_ interface: Interface, _ functions: [NamedFunction: FunctionImplementation])
+    {
+        self.interface = interface
+        self.functions = functions
+    }
+
+    public func select(_ selector: Selector) -> FunctionImplementation?
+    {
+        for (function, implementation) in self.functions
+        {
+            if function.name == selector.name && function.signature == selector.signature
+            {
+                return implementation
+            }
+        }
+
+        return nil
     }
 }

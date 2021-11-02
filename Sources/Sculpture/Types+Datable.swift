@@ -149,7 +149,7 @@ extension Option: MaybeDatable
         guard let (name, rest) = sliceDataToString(data) else {return nil}
         self.name = name
 
-        guard let typeList: [PropertyType] = dataToList(rest) else
+        guard let typeList: [Type] = dataToList(rest) else
         {
             self.types = []
             return
@@ -176,7 +176,7 @@ extension Property: MaybeDatable
         guard let (name, rest) = sliceDataToString(data) else {return nil}
         self.name = name
 
-        guard let type = PropertyType(data: rest) else {return nil}
+        guard let type = Type(data: rest) else {return nil}
         self.type = type
     }
 
@@ -232,58 +232,58 @@ extension Choice: MaybeDatable
     }
 }
 
-extension PropertyType: MaybeDatable
-{
-    public init?(data: Data)
-    {
-        guard data.count > 1 else {return nil}
-
-        let typeByte = data[0]
-        let rest = Data(data[1...])
-        guard let type = Types(rawValue: typeByte) else {return nil}
-
-        switch type
-        {
-            case .basic:
-                guard let basicType = BasicType(data: rest) else {return nil}
-                self = .basic(basicType)
-            case .structure:
-                let typeName = rest.string
-                self = .structure(typeName)
-            case .sequence:
-                let typeName = rest.string
-                self = .sequence(typeName)
-            case .choice:
-                let typeName = rest.string
-                self = .choice(typeName)
-            default:
-                return nil
-        }
-    }
-
-    public var data: Data
-    {
-        var result = Data()
-
-        switch self
-        {
-            case .basic(let basicType):
-                result.append(Types.basic.rawValue.data)
-                result.append(basicType.data)
-            case .structure(let typeName):
-                result.append(Types.structure.rawValue.data)
-                result.append(typeName.data)
-            case .sequence(let typeName):
-                result.append(Types.sequence.rawValue.data)
-                result.append(typeName.data)
-            case .choice(let typeName):
-                result.append(Types.choice.rawValue.data)
-                result.append(typeName.data)
-        }
-
-        return result
-    }
-}
+//extension PropertyType: MaybeDatable
+//{
+//    public init?(data: Data)
+//    {
+//        guard data.count > 1 else {return nil}
+//
+//        let typeByte = data[0]
+//        let rest = Data(data[1...])
+//        guard let type = Types(rawValue: typeByte) else {return nil}
+//
+//        switch type
+//        {
+//            case .basic:
+//                guard let basicType = BasicType(data: rest) else {return nil}
+//                self = .basic(basicType)
+//            case .structure:
+//                let typeName = rest.string
+//                self = .structure(typeName)
+//            case .sequence:
+//                let typeName = rest.string
+//                self = .sequence(typeName)
+//            case .choice:
+//                let typeName = rest.string
+//                self = .choice(typeName)
+//            default:
+//                return nil
+//        }
+//    }
+//
+//    public var data: Data
+//    {
+//        var result = Data()
+//
+//        switch self
+//        {
+//            case .basic(let basicType):
+//                result.append(Types.basic.rawValue.data)
+//                result.append(basicType.data)
+//            case .structure(let typeName):
+//                result.append(Types.structure.rawValue.data)
+//                result.append(typeName.data)
+//            case .sequence(let typeName):
+//                result.append(Types.sequence.rawValue.data)
+//                result.append(typeName.data)
+//            case .choice(let typeName):
+//                result.append(Types.choice.rawValue.data)
+//                result.append(typeName.data)
+//        }
+//
+//        return result
+//    }
+//}
 
 extension BasicType: MaybeDatable
 {
@@ -378,13 +378,21 @@ extension Interface: MaybeDatable
 {
     public init?(data: Data)
     {
-        guard let functions: [NamedFunction] = dataToList(data) else {return nil}
+        guard let (name, rest) = sliceDataToString(data) else {return nil}
+        self.name = name
+
+        guard let functions: [NamedFunction] = dataToList(rest) else {return nil}
         self.functions = functions
     }
 
     public var data: Data
     {
-        return listToData(self.functions, totalCount: false, itemCount: true)
+        var result = Data()
+
+        result.append(stringToData(self.name))
+        result.append(listToData(self.functions, totalCount: false, itemCount: true))
+
+        return result
     }
 }
 
@@ -462,7 +470,7 @@ extension Selector: MaybeDatable
     {
         var data = Data()
 
-        data.append(self.name.data)
+        data.append(stringToData(self.name))
         data.append(self.signature.data)
 
         return data

@@ -155,23 +155,23 @@ public class ValueDatabase
 public struct NamedReferenceValue: Codable, Equatable
 {
     public let name: String
-    public var value: LiteralValue?
-    {
-        return NamedValueDatabase.get(name: self.name)
-    }
+//    public var value: LiteralValue?
+//    {
+//        return NamedValueDatabase.get(name: self.name)
+//    }
 
-    public init?(_ name: String)
+    public init(_ name: String)
     {
-        guard let _ = NamedValueDatabase.get(name: name) else { return nil }
+//        guard let _ = NamedValueDatabase.get(name: name) else { return nil }
         self.name = name
     }
 
-    public init(_ name: String, _ value: LiteralValue)
-    {
-        self.name = name
-
-        NamedValueDatabase.put(name: name, value: value)
-    }
+//    public init(_ name: String, _ value: LiteralValue)
+//    {
+//        self.name = name
+//
+//        NamedValueDatabase.put(name: name, value: value)
+//    }
 }
 
 public struct ReferenceValue: Codable, Equatable

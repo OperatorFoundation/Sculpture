@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  SculptureConnection.swift
 //  
 //
 //  Created by Dr. Brandon Wiley on 10/20/21.
@@ -13,45 +13,47 @@ import Transmission
 import TransmissionLinux
 #endif
 
+import Sculpture
+
 public class SculptureConnection
 {
     let connection: Connection
+    let remote: RemoteDatabase = RemoteDatabase() // Per-connection RPC database
+    let queue: DispatchQueue = DispatchQueue(label: "SculptureConnection.processResults")
+    let loggingTag: String
 
-    public init?(host: String, port: Int)
+    public convenience init?(host: String, port: Int, loggingTag: String = "")
     {
         guard let connection = Connection(host: host, port: port) else {return nil}
+        self.init(connection: connection, loggingTag: loggingTag)
+    }
+
+    public init(connection: Connection, loggingTag: String)
+    {
         self.connection = connection
+        self.loggingTag = loggingTag
     }
 
     public func write(entity: Entity) -> Bool
     {
         let data = entity.data
+
+        print("\(loggingTag) writing: \(data.count)")
         return self.connection.write(data: data)
     }
 
     public func read() -> Entity?
     {
         guard let countBytes = self.connection.read(size: 8) else {return nil}
+        print("\(loggingTag) \(Thread.current) read \(countBytes.count)")
         guard let count = countDataToCount(countBytes) else {return nil}
         let intCount = Int(count)
 
         guard let rest = self.connection.read(size: intCount) else {return nil}
+        print("\(loggingTag) read: \(rest.count)/\(intCount)")
 
-        let typeByte = rest[0]
-        let remainder = Data(rest[1...])
+        let entityData = countBytes + rest
 
-        guard let type = Entities(rawValue: typeByte) else {return nil}
-        switch type
-        {
-            case .type:
-                guard let type = Type(data: remainder) else {return nil}
-                return .type(type)
-            case .value:
-                guard let value = Value(data: remainder) else {return nil}
-                return .value(value)
-            case .flow:
-                guard let flow = Flow(data: remainder) else {return nil}
-                return .flow(flow)
-        }
+        return Entity(data: entityData)
     }
 }
