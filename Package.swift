@@ -3,7 +3,6 @@
 
 import PackageDescription
 
-#if os(macOS) || os(iOS)
 let package = Package(
     name: "Sculpture",
     platforms: [.macOS(.v11)],
@@ -25,14 +24,15 @@ let package = Package(
         .package(name: "Datable", url: "https://github.com/OperatorFoundation/Datable", from: "3.1.0"),
         .package(name: "Transmission", url: "https://github.com/OperatorFoundation/Transmission", from: "0.4.1"),
         .package(name: "TransmissionLinux", url: "https://github.com/OperatorFoundation/TransmissionLinux", from: "0.4.0"),
-        .package(name: "Gardener", url: "https://github.com/OperatorFoundation/Gardener", from: "0.0.48")
+        .package(name: "Gardener", url: "https://github.com/OperatorFoundation/Gardener", from: "0.0.48"),
+        .package(url: "https://github.com/blanu/Focus.git", .branch("main")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Sculpture",
-            dependencies: ["Datable"]),
+            dependencies: ["Datable", "Focus"]),
         .target(
             name: "SculptureNetwork",
             dependencies: ["Sculpture", "Datable", "Transmission"]),
@@ -48,49 +48,3 @@ let package = Package(
     ],
     swiftLanguageVersions: [.v5]
 )
-#else
-let package = Package(
-    name: "Sculpture",
-    platforms: [.macOS(.v11)],
-    products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
-        .library(
-            name: "Sculpture",
-            targets: ["Sculpture"]),
-        .library(
-            name: "SculptureNetwork",
-            targets: ["SculptureNetwork"]),
-        .library(
-            name: "SculptureGenerate",
-            targets: ["SculptureGenerate"]),
-    ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-        .package(name: "Datable", url: "https://github.com/OperatorFoundation/Datable", from: "3.1.0"),
-        .package(name: "Transmission", url: "https://github.com/OperatorFoundation/Transmission", from: "0.5.0"),
-        .package(name: "TransmissionLinux", url: "https://github.com/OperatorFoundation/TransmissionLinux", from: "0.4.0"),
-        .package(name: "Gardener", url: "https://github.com/OperatorFoundation/Gardener", from: "0.0.48")
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages this package depends on.
-        .target(
-            name: "Sculpture",
-            dependencies: ["Datable"]),
-        .target(
-            name: "SculptureNetwork",
-            dependencies: ["Sculpture", "Datable", "TransmissionLinux"]),
-        .target(
-            name: "SculptureGenerate",
-            dependencies: ["Sculpture", "Datable", "Gardener"]),
-        .testTarget(
-            name: "SculptureTests",
-            dependencies: ["Sculpture"]),
-        .testTarget(
-            name: "SculptureNetworkTests",
-            dependencies: ["SculptureNetwork"]),
-    ],
-    swiftLanguageVersions: [.v5]
-)
-#endif
