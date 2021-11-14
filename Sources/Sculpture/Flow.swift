@@ -20,6 +20,14 @@ public struct Call: Codable, Equatable
     public let selector: Selector
     public let arguments: [Value]
 
+    public init?(identifier: UInt64, _ target: Value, _ selector: Selector, _ arguments: [Value])
+    {
+        self.identifier = identifier
+        self.target = target
+        self.selector = selector
+        self.arguments = arguments
+    }
+
     public init?(_ target: Value, _ selector: Selector, _ arguments: [Value])
     {
         self.identifier = CallDatabase.allocateIdentifier()
