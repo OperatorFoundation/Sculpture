@@ -26,13 +26,14 @@ let package = Package(
         .package(name: "TransmissionLinux", url: "https://github.com/OperatorFoundation/TransmissionLinux", from: "0.4.0"),
         .package(name: "Gardener", url: "https://github.com/OperatorFoundation/Gardener", from: "0.0.48"),
         .package(url: "https://github.com/blanu/Focus.git", .branch("main")),
+        .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from: "1.2.5")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "Sculpture",
-            dependencies: ["Datable", "Focus"]),
+            dependencies: ["Datable", "Focus", "SwiftHexTools"]),
         .target(
             name: "SculptureNetwork",
             dependencies: ["Sculpture", "Datable", "Transmission"]),

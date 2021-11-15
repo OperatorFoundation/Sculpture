@@ -18,6 +18,13 @@ final class SculptureTests: XCTestCase {
         guard let result = maybeResult else {return}
 
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Entity(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testType()
@@ -31,6 +38,14 @@ final class SculptureTests: XCTestCase {
         guard let result = maybeResult else {return}
 
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Type(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
+
     }
 
     func testBasicTypeString()
@@ -80,7 +95,6 @@ final class SculptureTests: XCTestCase {
         let maybeResult = Option(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
     }
 
@@ -93,8 +107,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = Choice(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Choice(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testSequence()
@@ -105,8 +125,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = Sequence(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Sequence(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testPropertyBasicString()
@@ -117,8 +143,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = Property(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Property(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testStructure()
@@ -133,8 +165,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = Structure(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Structure(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     // Value tests
@@ -184,8 +222,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = OptionValue(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = OptionValue(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testSequenceValue()
@@ -196,8 +240,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = SequenceValue(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = SequenceValue(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testSequenceValueString()
@@ -208,8 +258,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = SequenceValue(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = SequenceValue(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testPropertyValueBasicString()
@@ -220,8 +276,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = Value(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Value(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testStructureInstance()
@@ -232,8 +294,14 @@ final class SculptureTests: XCTestCase {
         let maybeResult = StructureInstance(data: data)
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = StructureInstance(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testValue()
@@ -245,8 +313,14 @@ final class SculptureTests: XCTestCase {
 
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Value(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 
     func testEntityValue()
@@ -258,7 +332,13 @@ final class SculptureTests: XCTestCase {
 
         XCTAssertNotNil(maybeResult)
         guard let result = maybeResult else {return}
-
         XCTAssertEqual(result, correct)
+
+        let string = correct.description
+        print(string)
+        let maybeStringResult = Entity(string)
+        XCTAssertNotNil(maybeStringResult)
+        guard let stringResult = maybeStringResult else {return}
+        XCTAssertEqual(stringResult, correct)
     }
 }

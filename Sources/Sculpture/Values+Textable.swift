@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import Datable
+import SwiftHexTools
 
 extension Value: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         if let line = structureText.line
         {
@@ -54,7 +56,7 @@ extension Value: Textable
         }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         switch self
         {
@@ -73,7 +75,7 @@ extension Value: Textable
 
 extension LiteralValue: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         if let line = structureText.line
         {
@@ -97,7 +99,8 @@ extension LiteralValue: Textable
                 case "string":
                     let parameters = line.parameters
                     guard parameters.count == 1 else {return nil}
-                    let value = parameters[0]
+                    guard let data = Data(hex: parameters[0]) else {return nil}
+                    let value = data.string
                     self = .basic(BasicValue.string(value))
                     return
                 default:
@@ -152,7 +155,7 @@ extension LiteralValue: Textable
         }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         switch self
         {
@@ -164,7 +167,7 @@ extension LiteralValue: Textable
                     case .uint(let value):
                         return .line(Line(name: "uint", parameters: [value.string]))
                     case .string(let value):
-                        return .line(Line(name: "string", parameters: [value]))
+                        return .line(Line(name: "string", parameters: [value.data.hex]))
                 }
             case .choice(let type):
                 return .block(Block(
@@ -202,33 +205,45 @@ extension LiteralValue: Textable
 
 extension OptionValue: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
-        guard let block = structureText.block else {return nil}
-        let name = block.line.name
-        guard name == "choice" else {return nil}
-
-        let parameters = block.line.parameters
-        guard parameters.count == 2 else {return nil}
-
-        let choiceName = parameters[0]
-        let chosen = parameters[1]
-
-        let inner = block.inner
-        guard let list = inner.list else {return nil}
-        let values = list.compactMap
+        if let line = structureText.line
         {
-            (text: StructureText) -> Value? in
+            let name = line.name
+            guard name == "choice" else {return nil}
 
-            return Value(structureText: text)
+            let parameters = line.parameters
+            guard parameters.count == 2 else {return nil}
+
+            let choiceName = parameters[0]
+            let chosen = parameters[1]
+
+            self = OptionValue(choiceName, chosen, [])
+            return
         }
-        guard values.count == list.count else {return nil}
+        else if let block = structureText.block
+        {
+            let name = block.line.name
+            guard name == "choice" else {return nil}
 
-        self = OptionValue(choiceName, chosen, values)
-        return
+            let parameters = block.line.parameters
+            guard parameters.count == 2 else {return nil}
+
+            let choiceName = parameters[0]
+            let chosen = parameters[1]
+
+            guard let values: [Value] = parseInnerList(structureText: structureText) else {return nil}
+
+            self = OptionValue(choiceName, chosen, values)
+            return
+        }
+        else
+        {
+            return nil
+        }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.values.map
         {
@@ -237,16 +252,27 @@ extension OptionValue: Textable
             return value.structureText
         }
 
-        return .block(Block(
-            line: Line(name: "choice", parameters: [self.choice, self.chosen]),
-            inner: .list(list)
-        ))
+        switch list.count
+        {
+            case 0:
+                return .line(Line(name: "choice", parameters: [self.choice, self.chosen]))
+            case 1:
+                return .block(Block(
+                    line: Line(name: "choice", parameters: [self.choice, self.chosen]),
+                    inner: list[0]
+                ))
+            default:
+                return .block(Block(
+                    line: Line(name: "choice", parameters: [self.choice, self.chosen]),
+                    inner: .list(list)
+                ))
+        }
     }
 }
 
 extension Function: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let type = block.line.name
@@ -265,7 +291,7 @@ extension Function: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         return .block(Block(
             line: Line(name: self.type, parameters: []),
@@ -276,31 +302,41 @@ extension Function: Textable
 
 extension SequenceValue: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
-        guard let block = structureText.block else {return nil}
-        let name = block.line.name
-        guard name == "sequence" else {return nil}
-
-        let parameters = block.line.parameters
-        guard parameters.count == 1 else {return nil}
-        let type = parameters[0]
-
-        let inner = block.inner
-        guard let list = inner.list else {return nil}
-        let contents = list.compactMap
+        if let line = structureText.line
         {
-            (text: StructureText) -> Value? in
+            let name = line.name
+            guard name == "sequence" else {return nil}
 
-            return Value(structureText: text)
+            let parameters = line.parameters
+            guard parameters.count == 1 else {return nil}
+            let type = parameters[0]
+
+            self = SequenceValue(type, [])
+            return
         }
-        guard contents.count == list.count else {return nil}
+        else if let block = structureText.block
+        {
+            let name = block.line.name
+            guard name == "sequence" else {return nil}
 
-        self = SequenceValue(type, contents)
-        return
+            let parameters = block.line.parameters
+            guard parameters.count == 1 else {return nil}
+            let type = parameters[0]
+
+            guard let contents: [Value] = parseInnerList(structureText: structureText) else {return nil}
+
+            self = SequenceValue(type, contents)
+            return
+        }
+        else
+        {
+            return nil
+        }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.contents.map
         {
@@ -318,31 +354,41 @@ extension SequenceValue: Textable
 
 extension StructureInstance: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
-        guard let block = structureText.block else {return nil}
-        let name = block.line.name
-        guard name == "structure" else {return nil}
-
-        let parameters = block.line.parameters
-        guard parameters.count == 1 else {return nil}
-        let type = parameters[0]
-
-        let inner = block.inner
-        guard let list = inner.list else {return nil}
-        let values = list.compactMap
+        if let line = structureText.line
         {
-            (text: StructureText) -> Value? in
+            let name = line.name
+            guard name == "structure" else {return nil}
 
-            return Value(structureText: text)
+            let parameters = line.parameters
+            guard parameters.count == 1 else {return nil}
+            let type = parameters[0]
+
+            self = StructureInstance(type, values: [])
+            return
         }
-        guard values.count == list.count else {return nil}
+        else if let block = structureText.block
+        {
+            let name = block.line.name
+            guard name == "structure" else {return nil}
 
-        self = StructureInstance(type, values: values)
-        return
+            let parameters = block.line.parameters
+            guard parameters.count == 1 else {return nil}
+            let type = parameters[0]
+
+            guard let values: [Value] = parseInnerList(structureText: structureText) else {return nil}
+
+            self = StructureInstance(type, values: values)
+            return
+        }
+        else
+        {
+            return nil
+        }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.values.map
         {
@@ -360,7 +406,7 @@ extension StructureInstance: Textable
 
 extension Tuple: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -391,7 +437,7 @@ extension Tuple: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.parts.map
         {

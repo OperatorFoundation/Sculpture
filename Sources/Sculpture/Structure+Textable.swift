@@ -7,6 +7,53 @@
 
 import Foundation
 
+public func parseInnerList<T>(structureText: StructureText) -> [T]? where T: Textable
+{
+    if let _ = structureText.line
+    {
+        return []
+    }
+    else if let block = structureText.block
+    {
+        let inner = block.inner
+        return parseList(structureText: inner)
+    }
+    else
+    {
+        return nil
+    }
+}
+
+public func parseList<T>(structureText: StructureText) -> [T]? where T: Textable
+{
+    if let _ = structureText.line
+    {
+        guard let item = T(structureText: structureText) else {return nil}
+        return [item]
+    }
+    else if let _ = structureText.block
+    {
+        guard let item = T(structureText: structureText) else {return nil}
+        return [item]
+    }
+    else if let list = structureText.list
+    {
+        let items = list.compactMap
+        {
+            (text: StructureText) -> T? in
+
+            return T(structureText: text)
+        }
+        guard items.count == list.count else {return nil}
+
+        return items
+    }
+    else
+    {
+        return nil
+    }
+}
+
 extension Entity: Textable
 {
     public init?(structureText: StructureText)

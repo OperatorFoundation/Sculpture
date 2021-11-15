@@ -9,7 +9,7 @@ import Foundation
 
 extension Flow: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         if let list = structureText.list
         {
@@ -99,7 +99,7 @@ extension Flow: Textable
         }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         switch self
         {

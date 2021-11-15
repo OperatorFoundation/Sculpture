@@ -26,7 +26,7 @@ public struct Block
     let inner: StructureText
 }
 
-protocol Textable
+public protocol Textable
 {
     init?(structureText: StructureText)
     var structureText: StructureText {get}

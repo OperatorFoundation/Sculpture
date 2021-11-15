@@ -9,7 +9,7 @@ import Foundation
 
 extension Type: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         if let line = structureText.line
         {
@@ -52,7 +52,7 @@ extension Type: Textable
         }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         switch self
         {
@@ -71,7 +71,7 @@ extension Type: Textable
 
 extension LiteralType: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         if let line = structureText.line
         {
@@ -156,7 +156,7 @@ extension LiteralType: Textable
         }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         switch self
         {
@@ -216,74 +216,135 @@ extension LiteralType: Textable
 
 extension Choice: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
-        guard let block = structureText.block else {return nil}
-        let name = block.line.name
-        let paramaeters = block.line.parameters
-        let inner = block.inner
-
-        guard paramaeters.count == 1 else {return nil}
-        guard let list = inner.list else {return nil}
-
-        let options = list.compactMap
+        guard let options: [Option] = parseInnerList(structureText: structureText) else {return nil}
+        if let line = structureText.line
         {
-            (text: StructureText) -> Option? in
+            // No options, strange but possible
+            let name = line.name
+            guard name == "choice" else {return nil}
 
-            guard let block = text.block else {return nil}
-            let name = block.line.name
-            let parameters = block.line.parameters
-            let inner = block.inner
+            let parameters = line.parameters
+            guard parameters.count == 1 else {return nil}
+            let choiceName = parameters[0]
 
-            guard parameters.count == 0 else {return nil}
-
-            guard let list = inner.list else {return nil}
-            let types = list.compactMap
-            {
-                (text: StructureText) -> Type? in
-
-                return Type(structureText: text)
-            }
-            guard types.count == list.count else {return nil}
-
-            return Option(name, types)
+            self = Choice(choiceName, options)
+            return
         }
+        else if let block = structureText.block
+        {
+            // Options
+            let name = block.line.name
+            guard name == "choice" else {return nil}
 
-        guard options.count == list.count else {return nil}
+            let parameters = block.line.parameters
+            guard parameters.count == 1 else {return nil}
+            let choiceName = parameters[0]
 
-        self = Choice(name, options)
-        return
+            self = Choice(choiceName, options)
+            return
+        }
+        else
+        {
+            return nil
+        }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
-        let list: [StructureText] = self.options.map
+        if self.options.isEmpty
         {
-            option in
-
-            let typeList = option.types.map
+            return .line(Line(name: "choice", parameters: [self.name]))
+        }
+        else
+        {
+            let list: [StructureText] = self.options.map
             {
-                type in
+                option in
+
+                let typeList = option.types.map
+                {
+                    type in
+
+                    return type.structureText
+                }
+
+                if option.types.isEmpty
+                {
+                    return .line(Line(name: option.name, parameters: []))
+                }
+                else
+                {
+                    return .block(Block(
+                        line: Line(name: option.name, parameters: []),
+                        inner: .list(typeList)
+                    ))
+                }
+            }
+
+            return .block(Block(
+                line: Line(name: "choice", parameters: [self.name]),
+                inner: .list(list)
+            ))
+        }
+    }
+}
+
+extension Option: Textable
+{
+    public init?(structureText: StructureText)
+    {
+        guard let types: [Type] = parseInnerList(structureText: structureText) else {return nil}
+
+        if let line = structureText.line
+        {
+            let name = line.name
+            let parameters = line.parameters
+            guard parameters.isEmpty else {return nil}
+            self = Option(name, types)
+            return
+        }
+        if let block = structureText.block
+        {
+            let name = block.line.name
+            let parameters = block.line.parameters
+            guard parameters.isEmpty else {return nil}
+            self = Option(name, types)
+            return
+        }
+        else
+        {
+            return nil
+        }
+    }
+
+    public var structureText: StructureText
+    {
+        if self.types.isEmpty
+        {
+            return .line(Line(name: self.name, parameters: []))
+        }
+        else
+        {
+            let typesText = self.types.map
+            {
+                (type: Type) -> StructureText in
 
                 return type.structureText
             }
 
             return .block(Block(
-                line: Line(name: option.name, parameters: []),
-                inner: .list(typeList)
+                line: Line(name: self.name, parameters: []),
+                inner: .list(typesText)
             ))
         }
-
-        return .block(Block(
-            line: Line(name: "choice", parameters: [self.name]),
-            inner: .list(list)
-        ))
     }
 }
 
 extension FunctionSignature: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         if let list = structureText.list
         {
@@ -339,7 +400,7 @@ extension FunctionSignature: Textable
         }
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let parameters: [StructureText] = self.parameters.map
         {
@@ -370,7 +431,7 @@ extension FunctionSignature: Textable
 
 extension Interface: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -395,7 +456,7 @@ extension Interface: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.functions.map
         {
@@ -413,7 +474,7 @@ extension Interface: Textable
 
 extension NamedFunction: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -430,7 +491,7 @@ extension NamedFunction: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         return .block(Block(
             line: Line(name: "function", parameters: [self.name]),
@@ -441,7 +502,7 @@ extension NamedFunction: Textable
 
 extension Optional: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -457,7 +518,7 @@ extension Optional: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         return .block(Block(
             line: Line(name: "optional", parameters: []),
@@ -468,12 +529,12 @@ extension Optional: Textable
 
 extension Selector: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         return nil
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         return .block(Block(
             line: Line(name: "selector", parameters: []),
@@ -484,7 +545,7 @@ extension Selector: Textable
 
 extension Sequence: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -499,7 +560,7 @@ extension Sequence: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         return .block(Block(
             line: Line(name: "sequence", parameters: []),
@@ -510,7 +571,7 @@ extension Sequence: Textable
 
 extension Structure: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -520,22 +581,13 @@ extension Structure: Textable
         guard parameters.count == 1 else {return nil}
         let structureName = parameters[0]
 
-        let inner = block.inner
-        guard let list = inner.list else {return nil}
-
-        let properties = list.compactMap
-        {
-            (text: StructureText) -> Property? in
-
-            return Property(structureText: text)
-        }
-        guard properties.count == list.count else {return nil}
+        guard let properties: [Property] = parseInnerList(structureText: structureText) else {return nil}
 
         self = Structure(structureName, properties)
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.properties.map
         {
@@ -553,7 +605,7 @@ extension Structure: Textable
 
 extension Property: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -570,7 +622,7 @@ extension Property: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         return .block(Block(
             line: Line(name: "property", parameters: [self.name]),
@@ -581,7 +633,7 @@ extension Property: Textable
 
 extension TupleType: Textable
 {
-    init?(structureText: StructureText)
+    public init?(structureText: StructureText)
     {
         guard let block = structureText.block else {return nil}
         let name = block.line.name
@@ -605,7 +657,7 @@ extension TupleType: Textable
         return
     }
 
-    var structureText: StructureText
+    public var structureText: StructureText
     {
         let list: [StructureText] = self.parts.map
         {
