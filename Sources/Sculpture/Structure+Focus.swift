@@ -84,4 +84,29 @@ extension Entity
                 }
         )
     }
+
+    public var relation: SimplePrism<Entity, Relation>
+    {
+        SimplePrism<Entity, Relation>(
+            tryGet:
+                {
+                    (entity: Entity) -> Relation? in
+
+                    switch entity
+                    {
+                        case .relation(let relation):
+                            return relation
+                        default:
+                            return nil
+                    }
+                },
+
+            inject:
+                {
+                    (relation: Relation) -> Entity in
+
+                    return .relation(relation)
+                }
+        )
+    }
 }

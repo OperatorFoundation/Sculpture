@@ -18,6 +18,8 @@ public func entitySource(entity: Entity) -> String
             return valueSource(value: value)
         case .flow(let flow):
             return flowSource(flow: flow)
+        case .relation(let relation):
+            return relationSource(relation)
     }
 }
 
@@ -225,4 +227,10 @@ public func tupleSource(_ tuple: TupleType) -> String
 
     let partsString = strings.joined(separator: ", ")
     return "(\(partsString))"
+}
+
+public func relationSource(_ relation: Relation) -> String
+{
+    // FIXME
+    return ""
 }

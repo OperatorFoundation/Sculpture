@@ -102,6 +102,11 @@ extension Entity: Textable
                     line: Line(name: "flow", parameters: []),
                     inner: flow.structureText
                 ))
+            case .relation(let relation):
+                return .block(Block(
+                    line: Line(name: "relation", parameters: []),
+                    inner: relation.structureText
+                ))
         }
     }
 }

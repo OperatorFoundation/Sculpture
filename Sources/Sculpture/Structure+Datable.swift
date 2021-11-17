@@ -11,9 +11,10 @@ let version: UInt8 = 0
 
 public enum Entities: UInt8
 {
-    case type      = 100
-    case value     = 200
-    case flow      = 150
+    case type     = 100
+    case value    = 200
+    case flow     = 150
+    case relation = 160
 }
 
 public enum Types: UInt8
@@ -46,6 +47,12 @@ public enum Flows: UInt8
 {
     case call   = 151
     case result = 152
+}
+
+public enum Relations: UInt8
+{
+    case inherits   = 161
+    case implements = 162
 }
 
 public enum References: UInt8
@@ -286,6 +293,9 @@ extension Entity: MaybeDatable
             case .flow:
                 guard let value = Flow(data: remainder) else {return nil}
                 self = .flow(value)
+            case .relation:
+                guard let value = Relation(data: remainder) else {return nil}
+                self = .relation(value)
         }
     }
 
@@ -303,6 +313,10 @@ extension Entity: MaybeDatable
                 return countData + data
             case .flow(let value):
                 let data = Entities.flow.rawValue.data + value.data
+                let countData = dataToCountData(data)
+                return countData + data
+            case .relation(let value):
+                let data = Entities.relation.rawValue.data + value.data
                 let countData = dataToCountData(data)
                 return countData + data
         }
