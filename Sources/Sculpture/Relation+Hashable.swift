@@ -17,6 +17,8 @@ extension Relation: Hashable
                 hasher.combine(relation)
             case .inherits(let relation):
                 hasher.combine(relation)
+            case .encapsulates(let relation):
+                hasher.combine(relation)
         }
     }
 }
@@ -38,5 +40,15 @@ extension Implements: Hashable
         hasher.combine("implements")
         hasher.combine(self.instance)
         hasher.combine(self.interface)
+    }
+}
+
+extension Encapsulates: Hashable
+{
+    public func hash(into hasher: inout Hasher)
+    {
+        hasher.combine("encapsulates")
+        hasher.combine(self.container)
+        hasher.combine(self.item)
     }
 }

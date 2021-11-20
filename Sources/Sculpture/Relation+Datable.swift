@@ -24,6 +24,9 @@ extension Relation: MaybeDatable
             case .inherits:
                 guard let relation = Inherits(data: remainder) else {return nil}
                 self = .inherits(relation)
+            case .encapsulates:
+                guard let relation = Encapsulates(data: remainder) else {return nil}
+                self = .encapsulates(relation)
         }
     }
 
@@ -35,6 +38,8 @@ extension Relation: MaybeDatable
                 return Relations.implements.rawValue.data + relation.data
             case .inherits(let relation):
                 return Relations.inherits.rawValue.data + relation.data
+            case .encapsulates(let relation):
+                return Relations.encapsulates.rawValue.data + relation.data
         }
     }
 }
@@ -80,6 +85,29 @@ extension Inherits: MaybeDatable
         let subclassData = self.subclass.data
         result.append(dataToCountData(subclassData) + subclassData)
         result.append(self.superclass.data)
+
+        return result
+    }
+}
+
+extension Encapsulates: MaybeDatable
+{
+    public init?(data: Data)
+    {
+        guard let (subclass, rest): (Type, Data) = sliceDataToListItem(data) else {return nil}
+        self.container = subclass
+
+        guard let superclass = Type(data: rest) else {return nil}
+        self.item = superclass
+    }
+
+    public var data: Data
+    {
+        var result = Data()
+
+        let containerData = self.container.data
+        result.append(dataToCountData(containerData) + containerData)
+        result.append(self.item.data)
 
         return result
     }

@@ -37,6 +37,8 @@ extension Relation: Textable
                 return inherits.structureText
             case .implements(let implements):
                 return implements.structureText
+            case .encapsulates(let encapsulates):
+                return encapsulates.structureText
         }
     }
 }
@@ -96,6 +98,37 @@ extension Inherits: Textable
             inner: .list([
                 subclass.structureText,
                 superclass.structureText
+            ])
+        ))
+
+    }
+}
+
+extension Encapsulates: Textable
+{
+    public init?(structureText: StructureText)
+    {
+        guard let block = structureText.block else {return nil}
+        let name = block.line.name
+        guard name == "encapsulates" else {return nil}
+
+        let parameters = block.line.parameters
+        guard parameters.count == 0 else {return nil}
+
+        let inner = block.inner
+        guard let types: [Type] = parseInnerList(structureText: inner) else {return nil}
+        guard types.count == 2 else {return nil}
+        self.container = types[0]
+        self.item = types[1]
+    }
+
+    public var structureText: StructureText
+    {
+        return .block(Block(
+            line: Line(name: "encapsulates", parameters: []),
+            inner: .list([
+                container.structureText,
+                item.structureText
             ])
         ))
 

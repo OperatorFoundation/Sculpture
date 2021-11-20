@@ -11,6 +11,7 @@ public enum Relation: Codable, Equatable
 {
     case inherits(Inherits)
     case implements(Implements)
+    case encapsulates(Encapsulates)
 }
 
 public struct Inherits: Codable, Equatable
@@ -34,5 +35,17 @@ public struct Implements: Codable, Equatable
     {
         self.instance = instance
         self.interface = interface
+    }
+}
+
+public struct Encapsulates: Codable, Equatable
+{
+    let container: Type
+    let item: Type
+
+    public init(_ container: Type, _ item: Type)
+    {
+        self.container = container
+        self.item = item
     }
 }

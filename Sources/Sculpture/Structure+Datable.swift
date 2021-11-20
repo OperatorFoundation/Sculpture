@@ -51,8 +51,9 @@ public enum Flows: UInt8
 
 public enum Relations: UInt8
 {
-    case inherits   = 161
-    case implements = 162
+    case inherits     = 161
+    case implements   = 162
+    case encapsulates = 163
 }
 
 public enum References: UInt8
