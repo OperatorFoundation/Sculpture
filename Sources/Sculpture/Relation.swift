@@ -16,7 +16,7 @@ public enum Relation: Codable, Equatable
 
 extension Relation
 {
-    var relation: Relations
+    public var relation: Relations
     {
         switch self
         {
@@ -29,7 +29,7 @@ extension Relation
         }
     }
 
-    var left: Type
+    public var left: Type
     {
         switch self
         {
@@ -42,7 +42,7 @@ extension Relation
         }
     }
 
-    var right: Type
+    public var right: Type
     {
         switch self
         {
