@@ -14,10 +14,39 @@ public enum Relation: Codable, Equatable
     case encapsulates(Encapsulates)
 }
 
+extension Relation
+{
+    var left: Type
+    {
+        switch self
+        {
+            case .inherits(let relation):
+                return relation.subclass
+            case .implements(let relation):
+                return relation.instance
+            case .encapsulates(let relation):
+                return relation.container
+        }
+    }
+
+    var right: Type
+    {
+        switch self
+        {
+            case .inherits(let relation):
+                return relation.superclass
+            case .implements(let relation):
+                return relation.interface
+            case .encapsulates(let relation):
+                return relation.item
+        }
+    }
+}
+
 public struct Inherits: Codable, Equatable
 {
-    let subclass: Type
-    let superclass: Type
+    public let subclass: Type
+    public let superclass: Type
 
     public init(_ subclass: Type, _ superclass: Type)
     {
@@ -28,8 +57,8 @@ public struct Inherits: Codable, Equatable
 
 public struct Implements: Codable, Equatable
 {
-    let instance: Type
-    let interface: Type
+    public let instance: Type
+    public let interface: Type
 
     public init(_ instance: Type, _ interface: Type)
     {
@@ -40,8 +69,8 @@ public struct Implements: Codable, Equatable
 
 public struct Encapsulates: Codable, Equatable
 {
-    let container: Type
-    let item: Type
+    public let container: Type
+    public let item: Type
 
     public init(_ container: Type, _ item: Type)
     {
