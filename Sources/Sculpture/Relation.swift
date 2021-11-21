@@ -16,6 +16,19 @@ public enum Relation: Codable, Equatable
 
 extension Relation
 {
+    var relation: Relations
+    {
+        switch self
+        {
+            case .implements(_):
+                return Relations.implements
+            case .inherits(_):
+                return Relations.inherits
+            case .encapsulates(_):
+                return Relations.encapsulates
+        }
+    }
+
     var left: Type
     {
         switch self
