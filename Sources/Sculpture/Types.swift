@@ -74,6 +74,7 @@ public enum BasicType: Codable, Equatable
     case string
     case int
     case uint
+    case bytes
 }
 
 public struct Choice: Codable, Equatable

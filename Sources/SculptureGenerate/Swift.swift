@@ -82,6 +82,8 @@ public func basicTypeSource(basic: BasicType) -> String
             return "String"
         case .uint:
             return "UInt"
+        case .bytes:
+            return "Data"
     }
 }
 

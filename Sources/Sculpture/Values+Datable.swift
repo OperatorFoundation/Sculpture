@@ -265,9 +265,11 @@ extension BasicValue: MaybeDatable
             case .uint:
                 guard let uint = value.maybeNetworkUint64 else {return nil}
                 self = .uint(uint)
-            default:
-                // FIXME
-                return nil
+            case .int:
+                guard let int = value.int64 else {return nil} // FIXME - This is wrong, it uses local endianness
+                self = .int(int)
+            case .bytes:
+                self = .bytes(value)
         }
     }
 
@@ -285,8 +287,14 @@ extension BasicValue: MaybeDatable
                 result.append(BasicTypes.uint.rawValue.maybeNetworkData!)
                 result.append(uint.maybeNetworkData!)
                 return result
-            default:
-                // FIXME
+            case .int(let int):
+                // FIXME - need maybeNetworkData for int types
+                result.append(BasicTypes.int.rawValue.maybeNetworkData!)
+                result.append(int.data) // FIXME this is wrong, it has local endianness
+                return result
+            case .bytes(let data):
+                result.append(BasicTypes.bytes.rawValue.maybeNetworkData!)
+                result.append(data)
                 return result
         }
     }

@@ -31,6 +31,7 @@ public enum BasicValue: Codable, Equatable
     case int(Int64)
     case string(String)
     case uint(UInt64)
+    case bytes(Data)
 }
 
 public struct StructureInstance: Codable, Equatable

@@ -103,6 +103,12 @@ extension LiteralValue: Textable
                     let value = data.string
                     self = .basic(BasicValue.string(value))
                     return
+                case "bytes":
+                    let parameters = line.parameters
+                    guard parameters.count == 1 else {return nil}
+                    guard let data = Data(hex: parameters[0]) else {return nil}
+                    self = .basic(BasicValue.bytes(data))
+                    return
                 default:
                     return nil
             }
@@ -168,6 +174,8 @@ extension LiteralValue: Textable
                         return .line(Line(name: "uint", parameters: [value.string]))
                     case .string(let value):
                         return .line(Line(name: "string", parameters: [value.data.hex]))
+                    case .bytes(let value):
+                        return .line(Line(name: "bytes", parameters: [value.data.hex]))
                 }
             case .choice(let type):
                 return .block(Block(

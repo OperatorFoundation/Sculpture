@@ -169,6 +169,8 @@ extension LiteralType: Textable
                         return .line(Line(name: "basic", parameters: ["uint"]))
                     case .string:
                         return .line(Line(name: "basic", parameters: ["string"]))
+                    case .bytes:
+                        return .line(Line(name: "basic", parameters: ["bytes"]))
                 }
             case .choice(let type):
                 return .block(Block(

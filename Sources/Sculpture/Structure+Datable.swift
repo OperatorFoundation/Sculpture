@@ -68,6 +68,7 @@ enum BasicTypes: UInt8
     case int    = 11
     case uint   = 12
     case string = 13
+    case bytes  = 14
 }
 
 enum Optionals: UInt8

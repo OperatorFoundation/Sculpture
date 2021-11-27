@@ -302,6 +302,8 @@ extension BasicType: MaybeDatable
                 self = .uint
             case .int:
                 self = .int
+            case .bytes:
+                self = .bytes
         }
     }
 
@@ -315,6 +317,8 @@ extension BasicType: MaybeDatable
                 return BasicTypes.int.rawValue.data
             case .uint:
                 return BasicTypes.uint.rawValue.data
+            case .bytes:
+                return BasicTypes.bytes.rawValue.data
         }
     }
 }
