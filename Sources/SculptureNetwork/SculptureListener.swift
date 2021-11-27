@@ -22,7 +22,7 @@ public class SculptureListener
 
     public convenience init?(port: Int)
     {
-        guard let listener = Listener(port: port) else {return nil}
+        guard let listener = TransmissionListener(port: port, logger: nil) else {return nil}
         self.init(listener: listener)
     }
 

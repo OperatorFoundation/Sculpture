@@ -24,7 +24,7 @@ public class SculptureConnection
 
     public convenience init?(host: String, port: Int, loggingTag: String = "")
     {
-        guard let connection = Connection(host: host, port: port) else {return nil}
+        guard let connection = TransmissionConnection(host: host, port: port) else {return nil}
         self.init(connection: connection, loggingTag: loggingTag)
     }
 
