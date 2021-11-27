@@ -22,8 +22,7 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
         .package(name: "Datable", url: "https://github.com/OperatorFoundation/Datable", from: "3.1.0"),
-        .package(name: "Transmission", url: "https://github.com/OperatorFoundation/Transmission", from: "0.4.1"),
-        .package(name: "TransmissionLinux", url: "https://github.com/OperatorFoundation/TransmissionLinux", from: "0.4.0"),
+        .package(name: "Transmission", url: "https://github.com/OperatorFoundation/Transmission", from: "1.2.3"),
         .package(name: "Gardener", url: "https://github.com/OperatorFoundation/Gardener", from: "0.0.48"),
         .package(url: "https://github.com/blanu/Focus.git", .branch("main")),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from: "1.2.5")
