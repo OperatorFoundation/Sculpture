@@ -241,13 +241,14 @@ func dataToList<T>(_ data: Data) -> [T]? where T: MaybeDatable
 {
     var results: [T] = []
 
-    var sliced: (T, Data)? = sliceDataToListItem(data)
-    while sliced != nil
-    {
-        guard let (item, rest) = sliced else {return nil}
-        results.append(item)
+    guard var (item, rest): (T, Data) = sliceDataToListItem(data) else {return nil}
+    results.append(item)
 
-        sliced = sliceDataToListItem(rest)
+    while rest.count > 0
+    {
+        guard let sliced: (T, Data) = sliceDataToListItem(rest) else {return nil}
+        (item, rest) = sliced
+        results.append(item)
     }
 
     return results

@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(name: "Datable", url: "https://github.com/OperatorFoundation/Datable", from: "3.1.0"),
+        .package(name: "Datable", url: "https://github.com/OperatorFoundation/Datable", from: "3.1.4"),
         .package(name: "Transmission", url: "https://github.com/OperatorFoundation/Transmission", from: "1.2.3"),
         .package(name: "Gardener", url: "https://github.com/OperatorFoundation/Gardener", from: "0.0.48"),
         .package(url: "https://github.com/blanu/Focus.git", .branch("main")),
@@ -39,7 +39,10 @@ let package = Package(
         ),
         .target(
             name: "SculptureNetwork",
-            dependencies: ["Sculpture", "Datable", "Transmission"]),
+            dependencies: ["Sculpture", "Datable", "Transmission",
+                .product(name: "Crypto", package: "swift-crypto")
+            ]
+        ),
         .target(
             name: "SculptureGenerate",
             dependencies: ["Sculpture", "Datable", "Gardener"]),

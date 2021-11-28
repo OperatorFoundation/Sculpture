@@ -85,6 +85,7 @@ extension CryptographicValue: MaybeDatable
                 guard let key = try? P256.KeyAgreement.PrivateKey(x963Representation: value) else {return nil}
                 self = .p256AgreementPrivate(key)
             case .p256SigningPublic:
+                print(value.hex)
                 guard let key = try? P256.Signing.PublicKey(x963Representation: value) else {return nil}
                 self = .p256SigningPublic(key)
             case .p256SigningPrivate:
@@ -114,31 +115,31 @@ extension CryptographicValue: MaybeDatable
         switch self
         {
             case .p256AgreementPublic(let key):
-                result.append(CryptographicTypes.p256AgreementPublic.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.p256AgreementPublic.rawValue.maybeNetworkData!)
                 result.append(key.x963Representation)
                 return result
             case .p256AgreementPrivate(let key):
-                result.append(CryptographicTypes.p256AgreementPrivate.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.p256AgreementPrivate.rawValue.maybeNetworkData!)
                 result.append(key.x963Representation)
                 return result
             case .p256SigningPublic(let key):
-                result.append(CryptographicTypes.p256SigningPublic.rawValue.maybeNetworkData!)
-                result.append(key.rawRepresentation)
+                result.append(CryptographicValues.p256SigningPublic.rawValue.maybeNetworkData!)
+                result.append(key.x963Representation)
                 return result
             case .p256SigningPrivate(let key):
-                result.append(CryptographicTypes.p256SigningPrivate.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.p256SigningPrivate.rawValue.maybeNetworkData!)
                 result.append(key.x963Representation)
                 return result
             case .p256Signature(let signature):
-                result.append(CryptographicTypes.p256Signature.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.p256Signature.rawValue.maybeNetworkData!)
                 result.append(signature.rawRepresentation)
                 return result
             case .sha256(let data):
-                result.append(CryptographicTypes.sha256.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.sha256.rawValue.maybeNetworkData!)
                 result.append(data)
                 return result
             case .chaChaPolyKey(let key):
-                result.append(CryptographicTypes.chaChaPolyKey.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.chaChaPolyKey.rawValue.maybeNetworkData!)
                 let data = key.withUnsafeBytes
                 {
                     pointer -> Data in
@@ -149,7 +150,7 @@ extension CryptographicValue: MaybeDatable
                 result.append(data)
                 return result
             case .chaChaPolyNonce(let nonce):
-                result.append(CryptographicTypes.chaChaPolyNonce.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.chaChaPolyNonce.rawValue.maybeNetworkData!)
                 let data = nonce.withUnsafeBytes
                 {
                     pointer -> Data in
@@ -160,7 +161,7 @@ extension CryptographicValue: MaybeDatable
                 result.append(data)
                 return result
             case .chaChaPolyBox(let box):
-                result.append(CryptographicTypes.chaChaPolyBox.rawValue.maybeNetworkData!)
+                result.append(CryptographicValues.chaChaPolyBox.rawValue.maybeNetworkData!)
                 result.append(box.combined)
                 return result
         }

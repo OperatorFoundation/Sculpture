@@ -173,6 +173,7 @@ public class RemoteListener
     let name: String
     let value: Value
     let implementation: InterfaceImplementation
+    let queue = DispatchQueue(label: "RemoteListener")
 
     public init?(port: Int, name: String, value: Value, implementation: InterfaceImplementation)
     {
@@ -186,14 +187,14 @@ public class RemoteListener
 
     public func accept()
     {
-        while true
+        guard let connection = self.listener.accept() else {return}
+
+        let remote = RemoteDatabaseServer()
+        remote.put(self.name, self.value)
+        remote.implement(self.name, self.implementation)
+
+        queue.async
         {
-            guard let connection = self.listener.accept() else {return}
-
-            let remote = RemoteDatabaseServer()
-            remote.put(self.name, self.value)
-            remote.implement(self.name, self.implementation)
-
             remote.processCalls(connection)
         }
     }

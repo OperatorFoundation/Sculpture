@@ -55,7 +55,7 @@ extension Call: MaybeDatable
         guard let (selector, left): (Selector, Data) = sliceDataToListItem(remainder) else {return nil}
         self.selector = selector
 
-        guard let arguments: [Value] = dataToList(left) else {return nil}
+        guard let (arguments, _): ([Value], Data)  = sliceDataToList(left) else {return nil}
         self.arguments = arguments
     }
 
@@ -72,7 +72,7 @@ extension Call: MaybeDatable
         result.append(dataToCountData(self.selector.data))
         result.append(self.selector.data)
 
-        result.append(listToData(self.arguments, totalCount: false, itemCount: true))
+        result.append(listToData(self.arguments, totalCount: true, itemCount: true))
 
         return result
     }
