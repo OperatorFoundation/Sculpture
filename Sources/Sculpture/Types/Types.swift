@@ -25,6 +25,7 @@ public indirect enum LiteralType: Codable, Equatable
     case interfaceType(Interface)
     case tuple(TupleType)
     case optional(Optional)
+    case cryptographic(CryptographicType)
 }
 
 public struct Structure: Codable, Equatable
@@ -75,6 +76,7 @@ public enum BasicType: Codable, Equatable
     case int
     case uint
     case bytes
+    case boolean
 }
 
 public struct Choice: Codable, Equatable

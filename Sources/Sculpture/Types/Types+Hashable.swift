@@ -31,6 +31,8 @@ extension LiteralType: Hashable
         {
             case .basic(let type):
                 hasher.combine(type)
+            case .cryptographic(let type):
+                hasher.combine(type)
             case .choice(let type):
                 hasher.combine(type)
             case .function(let type):

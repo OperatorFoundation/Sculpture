@@ -18,6 +18,7 @@ public indirect enum Value: Codable, Equatable
 public enum LiteralValue: Codable, Equatable
 {
     case basic(BasicValue)
+    case cryptographic(CryptographicValue)
     case choice(OptionValue)
     case function(Function)
     case optional(Optional)
@@ -32,6 +33,7 @@ public enum BasicValue: Codable, Equatable
     case string(String)
     case uint(UInt64)
     case bytes(Data)
+    case boolean(Bool)
 }
 
 public struct StructureInstance: Codable, Equatable

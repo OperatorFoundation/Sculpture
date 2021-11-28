@@ -176,6 +176,36 @@ extension LiteralValue: Textable
                         return .line(Line(name: "string", parameters: [value.data.hex]))
                     case .bytes(let value):
                         return .line(Line(name: "bytes", parameters: [value.data.hex]))
+                    case .boolean(let value):
+                        switch value
+                        {
+                            case true:
+                                return .line(Line(name: "boolean", parameters: ["true"]))
+                            case false:
+                                return .line(Line(name: "boolean", parameters: ["false"]))
+                        }
+                }
+            case .cryptographic(let type):
+                switch type
+                {
+                    case .p256AgreementPublic(let value):
+                        return .line(Line(name: "p256AgreementPublic", parameters: [value.data.hex]))
+                    case .p256AgreementPrivate(let value):
+                        return .line(Line(name: "p256AgreementPrivate", parameters: [value.data.hex]))
+                    case .p256SigningPublic(let value):
+                        return .line(Line(name: "p256SigningPublic", parameters: [value.data.hex]))
+                    case .p256SigningPrivate(let value):
+                        return .line(Line(name: "p256SigningPrivate", parameters: [value.data.hex]))
+                    case .p256Signature(let value):
+                        return .line(Line(name: "p256Signature", parameters: [value.data.hex]))
+                    case .sha256(let value):
+                        return .line(Line(name: "sha256", parameters: [value.hex]))
+                    case .chaChaPolyKey(let value):
+                        return .line(Line(name: "chaChaPolyKey", parameters: [value.data.hex]))
+                    case .chaChaPolyNonce(let value):
+                        return .line(Line(name: "chaChaPolyNonce", parameters: [value.data.hex]))
+                    case .chaChaPolyBox(let value):
+                        return .line(Line(name: "chaChaPolyBox", parameters: [value.data.hex]))
                 }
             case .choice(let type):
                 return .block(Block(

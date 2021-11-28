@@ -53,6 +53,8 @@ public func literalTypeSource(literal: LiteralType) -> String
     {
         case .basic(let basic):
             return basicTypeSource(basic: basic)
+        case .cryptographic(let cryptographic):
+            return cryptographicTypeSource(cryptographic: cryptographic)
         case .choice(let choice):
             return choiceSource(choice: choice)
         case .function(let function):
@@ -84,6 +86,33 @@ public func basicTypeSource(basic: BasicType) -> String
             return "UInt"
         case .bytes:
             return "Data"
+        case .boolean:
+            return "Bool"
+    }
+}
+
+public func cryptographicTypeSource(cryptographic: CryptographicType) -> String
+{
+    switch cryptographic
+    {
+        case .p256AgreementPublic:
+            return "P256.KeyAgreement.PublicKey"
+        case .p256AgreementPrivate:
+            return "P256.KeyAgreement.PrivateKey"
+        case .p256SigningPublic:
+            return "P256.Signing.PublicKey"
+        case .p256SigningPrivate:
+            return "P256.Signing.PrivateKey"
+        case .p256Signature:
+            return "P256.Signing.ECDSASignature"
+        case .sha256:
+            return "SHA256.Digest"
+        case .chaChaPolyKey:
+            return "SymmetricKey"
+        case .chaChaPolyNonce:
+            return "ChaChaPoly.Nonce"
+        case .chaChaPolyBox:
+            return "ChaChaPoly.SealedBox"
     }
 }
 

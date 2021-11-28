@@ -63,6 +63,9 @@ extension LiteralValue: MaybeDatable
             case .basic:
                 guard let value = BasicValue(data: rest) else {return nil}
                 self = .basic(value)
+            case .cryptographic:
+                guard let value = CryptographicValue(data: rest) else {return nil}
+                self = .cryptographic(value)
             case .choice:
                 guard let value = OptionValue(data: rest) else {return nil}
                 self = .choice(value)
@@ -90,6 +93,8 @@ extension LiteralValue: MaybeDatable
         {
             case .basic(let value):
                 return Values.basic.rawValue.data + value.data
+            case .cryptographic(let value):
+                return Values.cryptographic.rawValue.data + value.data
             case .structure(let value):
                 return Values.structure.rawValue.data + value.data
             case .choice(let value):
@@ -270,6 +275,20 @@ extension BasicValue: MaybeDatable
                 self = .int(int)
             case .bytes:
                 self = .bytes(value)
+            case .boolean:
+                guard value.count == 1 else {return nil}
+                let byte = value[0]
+                switch byte
+                {
+                    case 0:
+                        self = .boolean(false)
+                        return
+                    case 1:
+                        self = .boolean(true)
+                        return
+                    default:
+                        return nil
+                }
         }
     }
 
@@ -295,6 +314,16 @@ extension BasicValue: MaybeDatable
             case .bytes(let data):
                 result.append(BasicTypes.bytes.rawValue.maybeNetworkData!)
                 result.append(data)
+                return result
+            case .boolean(let bool):
+                result.append(BasicTypes.boolean.rawValue.maybeNetworkData!)
+                switch bool
+                {
+                    case true:
+                        result.append(1)
+                    case false:
+                        result.append(0)
+                }
                 return result
         }
     }

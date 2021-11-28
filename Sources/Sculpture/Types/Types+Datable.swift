@@ -63,6 +63,9 @@ extension LiteralType: MaybeDatable
             case .basic:
                 guard let value = BasicType(data: rest) else {return nil}
                 self = .basic(value)
+            case .cryptographic:
+                guard let value = CryptographicType(data: rest) else {return nil}
+                self = .cryptographic(value)
             case .structure:
                 guard let value = Structure(data: rest) else {return nil}
                 self = .structure(value)
@@ -96,6 +99,8 @@ extension LiteralType: MaybeDatable
         {
             case .basic(let value):
                 return Types.basic.rawValue.data + value.data
+            case .cryptographic(let value):
+                return Types.cryptographic.rawValue.data + value.data
             case .structure(let value):
                 return Types.structure.rawValue.data + value.data
             case .sequence(let value):
@@ -304,6 +309,8 @@ extension BasicType: MaybeDatable
                 self = .int
             case .bytes:
                 self = .bytes
+            case .boolean:
+                self = .boolean
         }
     }
 
@@ -319,6 +326,8 @@ extension BasicType: MaybeDatable
                 return BasicTypes.uint.rawValue.data
             case .bytes:
                 return BasicTypes.bytes.rawValue.data
+            case .boolean:
+                return BasicTypes.boolean.rawValue.data
         }
     }
 }

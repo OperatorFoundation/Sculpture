@@ -29,18 +29,20 @@ public enum Types: UInt8
     case interface     = 108
     case tuple         = 109
     case optional      = 110
+    case cryptographic = 120
 }
 
 public enum Values: UInt8
 {
     // Values
-    case basic     = 201
-    case choice    = 202
-    case function  = 203
-    case optional  = 204
-    case sequence  = 205
-    case structure = 206
-    case tuple     = 207
+    case basic         = 201
+    case choice        = 202
+    case function      = 203
+    case optional      = 204
+    case sequence      = 205
+    case structure     = 206
+    case tuple         = 207
+    case cryptographic = 220
 }
 
 public enum Flows: UInt8
@@ -65,10 +67,11 @@ public enum References: UInt8
 
 enum BasicTypes: UInt8
 {
-    case int    = 11
-    case uint   = 12
-    case string = 13
-    case bytes  = 14
+    case int     = 11
+    case uint    = 12
+    case string  = 13
+    case bytes   = 14
+    case boolean = 15
 }
 
 enum Optionals: UInt8
@@ -79,8 +82,34 @@ enum Optionals: UInt8
 
 enum Results: UInt8
 {
-    case value = 80
+    case value   = 80
     case failure = 81
+}
+
+enum CryptographicTypes: UInt8
+{
+    case p256AgreementPublic  = 121
+    case p256AgreementPrivate = 122
+    case p256SigningPublic    = 123
+    case p256SigningPrivate   = 124
+    case p256Signature        = 125
+    case sha256               = 126
+    case chaChaPolyKey        = 127
+    case chaChaPolyNonce      = 128
+    case chaChaPolyBox        = 129
+}
+
+enum CryptographicValues: UInt8
+{
+    case p256AgreementPublic  = 221
+    case p256AgreementPrivate = 222
+    case p256SigningPublic    = 223
+    case p256SigningPrivate   = 224
+    case p256Signature        = 225
+    case sha256               = 226
+    case chaChaPolyKey        = 227
+    case chaChaPolyNonce      = 228
+    case chaChaPolyBox        = 229
 }
 
 public func countDataToCount(_ data: Data) -> UInt64?

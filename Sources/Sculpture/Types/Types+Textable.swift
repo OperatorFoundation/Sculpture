@@ -171,6 +171,30 @@ extension LiteralType: Textable
                         return .line(Line(name: "basic", parameters: ["string"]))
                     case .bytes:
                         return .line(Line(name: "basic", parameters: ["bytes"]))
+                    case .boolean:
+                        return .line(Line(name: "basic", parameters: ["boolean"]))
+                }
+            case .cryptographic(let type):
+                switch type
+                {
+                    case .p256AgreementPublic:
+                        return .line(Line(name: "cryptographic", parameters: ["p256AgreementPublic"]))
+                    case .p256AgreementPrivate:
+                        return .line(Line(name: "cryptographic", parameters: ["p256AgreementPrivate"]))
+                    case .p256SigningPublic:
+                        return .line(Line(name: "cryptographic", parameters: ["p256SigningPublic"]))
+                    case .p256SigningPrivate:
+                        return .line(Line(name: "cryptographic", parameters: ["p256SigningPrivate"]))
+                    case .p256Signature:
+                        return .line(Line(name: "cryptographic", parameters: ["p256Signature"]))
+                    case .sha256:
+                        return .line(Line(name: "cryptographic", parameters: ["sha256"]))
+                    case .chaChaPolyKey:
+                        return .line(Line(name: "cryptographic", parameters: ["chaChaPolyKey"]))
+                    case .chaChaPolyNonce:
+                        return .line(Line(name: "cryptographic", parameters: ["chaChaPolyNonce"]))
+                    case .chaChaPolyBox:
+                        return .line(Line(name: "cryptographic", parameters: ["chaChaPolyBox"]))
                 }
             case .choice(let type):
                 return .block(Block(
