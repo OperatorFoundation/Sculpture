@@ -1,0 +1,31 @@
+100
+range
+outer_product
+    3 5
+    function
+        %
+        = 0
+times fizz buzz
+transpose
+plus
+select empty i x
+
+100
+⋯
+⊗ 3 5
+    % y
+    = 0
+× fizz buzz
+↴+
+⑂ ∅ i x
+
+100 ⋯
+⊗ 3 5
+  % = 0
+× fizz buzz
+↴ +
+⑂
+  ∅
+  i
+  x
+

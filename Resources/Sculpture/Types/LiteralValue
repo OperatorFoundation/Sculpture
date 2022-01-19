@@ -1,0 +1,9 @@
+type choice
+    basic: BasicValue
+    cryptographic: CryptographicValue
+    choice: OptionValue
+    function: Function
+    optional: Optional
+    sequence: SequenceValue
+    structure: StructureInstance
+    tuple: Tuple

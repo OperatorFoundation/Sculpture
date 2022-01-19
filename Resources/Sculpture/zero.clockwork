@@ -1,0 +1,7 @@
+zero:
+    value
+        literal
+            basic
+                int 0
+
+zero

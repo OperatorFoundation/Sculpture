@@ -1,0 +1,11 @@
+type choice
+    basic: BasicType
+    structure: Structure
+    sequence: Sequence
+    choice: Choice
+    function: FunctionSignature
+    selector: Selector
+    interfaceType: Interface
+    tuple: TupleType
+    optional: Optional
+    cryptographic: CryptographicType

@@ -77,7 +77,7 @@ public struct OptionValue: Codable, Equatable
 public struct SequenceValue: Codable, Equatable
 {
     public let type: String
-    public let contents: [Value]
+    public var contents: [Value]
 
     public init(_ type: String, _ contents: [Value])
     {
