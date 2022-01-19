@@ -1,0 +1,4 @@
+type choice
+    inherits Inherits
+    implements Implements
+    encapuslates Enscapsulates
