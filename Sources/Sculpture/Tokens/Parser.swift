@@ -11,8 +11,8 @@ import Abacus
 
 public class Parser
 {
-    var string: String
-    var top: ParserTree
+    public var string: String
+    public var top: ParserTree
 
     public init(_ string: String) throws
     {
