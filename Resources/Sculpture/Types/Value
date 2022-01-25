@@ -1,1 +1,1 @@
-type LiteralValue or ReferenceValue or NamedReferenceValue
+type.sum LiteralValue ReferenceValue NamedReferenceValue

@@ -1,1 +1,1 @@
-type LiteralType or ReferenceType or NamedReferenceType or unique
+type.sum LiteralType ReferenceType NamedReferenceType

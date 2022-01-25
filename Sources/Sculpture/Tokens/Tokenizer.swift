@@ -59,7 +59,11 @@ public class Tokenizer
                 switch char
                 {
                     case " ":
-                        guard !token.isEmpty else {throw TokenizerError.badSpace(position)}
+                        guard !token.isEmpty else
+                        {
+                            throw TokenizerError.badSpace(position)
+                        }
+
                         try token.finalize()
                         try checkBinding(token, tokens)
 

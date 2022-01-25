@@ -1,1 +1,1 @@
-type Value or Failure
+type.sum Value Failure

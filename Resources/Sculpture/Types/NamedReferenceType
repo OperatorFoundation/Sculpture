@@ -1,2 +1,2 @@
-type structure
-    name type.literal.basic.string
+type.structure
+	name: type.basic.symbol

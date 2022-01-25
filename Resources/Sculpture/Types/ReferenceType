@@ -1,2 +1,2 @@
-type structure
-    identifier type literal basic uint
+type.structure
+	identifier: type.basic.uint

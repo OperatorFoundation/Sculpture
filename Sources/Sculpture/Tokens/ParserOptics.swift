@@ -11,7 +11,7 @@ extension ParserTree: Target
 {
     public typealias Index = Int
 
-    public func get(_ lens: Lens<Self>) throws -> Self
+    public func get(lens: Lens<Self>) throws -> Self
     {
         if lens.isEmpty
         {
@@ -24,13 +24,13 @@ extension ParserTree: Target
             guard let (symbol, newLens) = lens.pop() else {throw LensError<Self>.badLens(lens)}
             guard symbol >= 0 && symbol < trees.count else {throw LensError<Self>.badLens(lens)}
             let subtree = trees[symbol]
-            return try subtree.get(newLens)
+            return try subtree.get(lens: newLens)
         }
     }
 
-    public func count(_ lens: Lens<Self>) throws -> Int
+    public func count(lens: Lens<Self>) throws -> Int
     {
-        let subtree = try self.get(lens)
+        let subtree = try self.get(lens: lens)
         switch subtree
         {
             case .token(_):
@@ -40,7 +40,7 @@ extension ParserTree: Target
         }
     }
 
-    public func set(_ lens: Lens<Self>, _ newTree: Self) throws -> Self
+    public func set(lens: Lens<Self>, _ newTree: Self) throws -> Self
     {
         if lens.isEmpty
         {
@@ -52,15 +52,15 @@ extension ParserTree: Target
             guard let (symbol, newLens) = lens.pop() else {throw LensError<Self>.badLens(lens)}
             guard symbol >= 0 && symbol < trees.count else {throw LensError<Self>.badLens(lens)}
             let subtree = trees[symbol]
-            let newSubtree = try subtree.set(newLens, newTree)
+            let newSubtree = try subtree.set(lens: newLens, newTree)
             trees[symbol]=newSubtree
             return .trees(trees)
         }
     }
 
-    public func isLeaf(_ lens: Lens<Self>) throws -> Bool
+    public func isLeaf(lens: Lens<Self>) throws -> Bool
     {
-        let subtree = try self.get(lens)
+        let subtree = try self.get(lens: lens)
         return subtree.token != nil
     }
 }
@@ -117,10 +117,10 @@ public protocol Target
 {
     associatedtype Index
 
-    func get(_ lens: Lens<Self>) throws -> Self
-    func count(_ lens: Lens<Self>) throws -> Int
-    func set(_ lens: Lens<Self>, _ newTree: Self) throws -> Self
-    func isLeaf(_ lens: Lens<Self>) throws -> Bool
+    func get(lens: Lens<Self>) throws -> Self
+    func count(lens: Lens<Self>) throws -> Int
+    func set(lens: Lens<Self>, _ newTree: Self) throws -> Self
+    func isLeaf(lens: Lens<Self>) throws -> Bool
 }
 
 public struct Focus<Tree> where Tree: Target
@@ -147,23 +147,23 @@ public struct Focus<Tree> where Tree: Target
 
     public func get() throws -> Tree
     {
-        return try self.tree.get(self.lens)
+        return try self.tree.get(lens: self.lens)
     }
 
     public func set(_ tree: Tree) throws -> Focus<Tree>
     {
-        let newTree = try self.tree.set(self.lens, tree)
+        let newTree = try self.tree.set(lens: self.lens, tree)
         return try Focus<Tree>(lens: self.lens, tree: newTree)
     }
 
     public func count() throws -> Int
     {
-        return try self.tree.count(self.lens)
+        return try self.tree.count(lens: self.lens)
     }
 
     public func isLeaf() throws -> Bool
     {
-        return try self.tree.isLeaf(self.lens)
+        return try self.tree.isLeaf(lens: self.lens)
     }
 
     public func isValid() -> Bool

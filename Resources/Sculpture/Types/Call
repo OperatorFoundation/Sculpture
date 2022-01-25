@@ -1,6 +1,5 @@
-type structure
-    identifier: type.literal.basic.uint
-    target: value
-    selector: value.selector
-    arguments: type.sequence
-        
+type.structure
+	identifier: SignedInteger
+	target: Value
+	selector: Selector
+	arguments: Sequence

@@ -6,6 +6,24 @@
 //
 
 import Foundation
+import Datable
+
+public enum SymbolTrees: UInt8, MaybeDatable
+{
+    case atom = 10
+    case lexicon = 20
+
+    public var data: Data
+    {
+        return self.rawValue.data
+    }
+
+    public init?(data: Data)
+    {
+        guard let uint8 = data.uint8 else {return nil}
+        self.init(rawValue: uint8)
+    }
+}
 
 public indirect enum SymbolTree: Equatable
 {
@@ -15,7 +33,7 @@ public indirect enum SymbolTree: Equatable
 
 extension SymbolTree
 {
-    public func get(_ lens: SymbolLens) -> SymbolTree?
+    public func get(lens: Lens<SymbolTree>) -> SymbolTree?
     {
         if lens.isEmpty
         {
@@ -32,18 +50,18 @@ extension SymbolTree
             {
                 case .word(let word):
                     guard let subtree = tree.get(key: word) else {return nil}
-                    return subtree.get(newLens)
+                    return subtree.get(lens: newLens)
                 case .index(let index):
                     guard let int = index.int else {return nil}
                     guard let subtree = tree.get(index: int) else {return nil}
-                    return subtree.get(newLens)
+                    return subtree.get(lens: newLens)
             }
         }
     }
 
-    public func count(_ lens: SymbolLens) -> Int?
+    public func count(_ lens: Lens<SymbolTree>) -> Int?
     {
-        guard let subtree = self.get(lens) else {return nil}
+        guard let subtree = self.get(lens: lens) else {return nil}
         switch subtree
         {
             case .atom(_):
@@ -53,7 +71,7 @@ extension SymbolTree
         }
     }
 
-    public func set(_ lens: SymbolLens, _ newTree: SymbolTree) -> SymbolTree?
+    public func set(_ lens: Lens<SymbolTree>, _ newTree: SymbolTree) -> SymbolTree?
     {
         if lens.isEmpty
         {
@@ -81,9 +99,9 @@ extension SymbolTree
         }
     }
 
-    public func isAtom(_ lens: SymbolLens) -> Bool?
+    public func isAtom(_ lens: Lens<SymbolTree>) -> Bool?
     {
-        guard let subtree = self.get(lens) else {return nil}
+        guard let subtree = self.get(lens: lens) else {return nil}
         return subtree.atom != nil
     }
 }

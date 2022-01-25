@@ -1,6 +1,6 @@
-type choice
-    int: type.literal.basic.int
-    string: type.literal.basic.string
-    uint: type.literal.basic.uint
-    bytes: type.literal.basic.bytes
-    boolean: type.literal.basic.bool
+type.choice
+	int: type.basic.int
+	string: type.basic.string
+	uint: type.basic.uint
+	bytes: type.basic.bytes
+	boolean: type.basic.bool

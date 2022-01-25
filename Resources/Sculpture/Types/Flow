@@ -1,1 +1,1 @@
-type Call or Result
+type.choice Call Result

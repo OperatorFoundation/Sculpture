@@ -1,6 +1,7 @@
 import XCTest
 @testable import Sculpture
 import Backtrace
+import Gardener
 
 final class SculptureTests: XCTestCase {
     public override func setUp()
@@ -686,6 +687,77 @@ final class SculptureTests: XCTestCase {
         }
     }
 
+//    public func testLexiconDatable() throws
+//    {
+//        let lexicon = SymbolLexicon()
+//        let word = Word("test")!
+//        let _ = lexicon.append(key: nil, value: .atom(.word(word)))
+//
+//        let data = lexicon.data
+//
+//        guard let result = SymbolLexicon(data: data) else
+//        {
+//            XCTFail()
+//            return
+//        }
+//
+//        XCTAssertEqual(lexicon, result)
+//    }
+
+    public func testSymbolTreeString() throws
+    {
+        try symbolTreeStringHelper("test\n")
+        try symbolTreeStringHelper("a b\n")
+        try symbolTreeStringHelper("a b c\n")
+        try symbolTreeStringHelper("a\nb\nc\n")
+        try symbolTreeStringHelper("a\n\tb\n")
+        try symbolTreeStringHelper("a\n\tb\n\tc\n")
+        try symbolTreeStringHelper("a b c\n\td\n")
+        try symbolTreeStringHelper("a\n\tb c\n")
+        try symbolTreeStringHelper("a b\n\tc d\n")
+        try symbolTreeStringHelper("a\n\tb\nc\n")
+        try symbolTreeStringHelper("a b\n\tc d\ne f\n")
+        try symbolTreeStringHelper("a\n\tb\n\t\tc\n")
+        try symbolTreeStringHelper("test\n\t1 2\n\t3 4\n")
+        try symbolTreeStringHelper("test\n\t1\n\t\t2\n")
+        try symbolTreeStringHelper("test\n\t1 2\n\t\t3\n\t4 5\n\t\t6\n")
+        try symbolTreeStringHelper("alpha beta\n\tdelta\n\t\tgamma\n")
+        try symbolTreeStringHelper("1 2\n\t3\n\t\t4\n\t5\n6\n")
+        try symbolTreeStringHelper("1.0 2e-10 1,000,000\n")
+        try symbolTreeStringHelper("1 2\n\t3 4\n")
+        try symbolTreeStringHelper("1 2 3\n\t4\n\t\t5 6 7\n")
+        try symbolTreeStringHelper("1 2 3\n\t4\n\t\t5 6 7\n\t\t\t8 9 10 11\n\t12\n13 14 15\n")
+        try symbolTreeStringHelper("test: value\n")
+        try symbolTreeStringHelper("test: value again\n")
+        try symbolTreeStringHelper("test: value again third\n")
+        try symbolTreeStringHelper("test: value again third\n\tnested\n")
+        try symbolTreeStringHelper("test: value again third\n\tnested again\n")
+        try symbolTreeStringHelper("test: value again third\n\tnested again third\n")
+        try symbolTreeStringHelper("test: value again third\n\tnested again third\n")
+        try symbolTreeStringHelper("test: value again third\n\tnested again third\n\t\tnestedmore\n")
+        try symbolTreeStringHelper("test: value again third\n\tnested again third\n\t\tnestedmore\ntrailing\n")
+        try symbolTreeStringHelper("test: value again third\n\tkey: nested again third\n\t\tnestedmore\ntrailing\n")
+        try symbolTreeStringHelper("test: value again third\n\tkey: nested again third\n\t\twow: nestedmore\ntrailing\n")
+        try symbolTreeStringHelper("a: b\nc: d\n")
+        try symbolTreeStringHelper("a: b\nc: d\ne:\n\tf\n\tg\n")
+        try symbolTreeStringHelper("a: b\nc: d\ne:\n\tf f2\n\tg g2\n")
+    }
+
+    public func symbolTreeStringHelper(_ input: String) throws
+    {
+        print("input : \(input)")
+
+        let parser = try Parser(input)
+        let lexicon = try SymbolLexicon(top: parser.top.trees!)
+        let tree = SymbolTree.lexicon(lexicon)
+        print("tree  : \(tree.description)")
+
+        let result = try tree.string()
+        print("result: \(result)")
+
+        XCTAssertEqual(result, input)
+    }
+
     public func testTokenizer() throws
     {
         try tokenizerHelper("test\n")
@@ -777,6 +849,26 @@ final class SculptureTests: XCTestCase {
         try symbolicHelper("a: b\nc: d\n", "((a: (b ))(c: (d )))")
         try symbolicHelper("a: b\nc: d\ne:\n\tf\n\tg\n", "((a: (b ))(c: (d ))(e: ((f )(g ))))")
         try symbolicHelper("a: b\nc: d\ne:\n\tf f2\n\tg g2\n", "((a: (b ))(c: (d ))(e: ((f f2 )(g g2 ))))")
+    }
+
+    public func testSymbolicResources() throws
+    {
+        let path = "/Users/brandon/Sculpture/Resources/Sculpture/Types"
+        guard let files = File.contentsOfDirectory(atPath: path) else
+        {
+            XCTFail()
+            return
+        }
+
+        for file in files
+        {
+            let filepath = path + "/" + file
+            let data = try Data(contentsOf: URL(fileURLWithPath: filepath))
+            let string = data.string
+            print(filepath)
+            print(string)
+            try symbolicHelper(string)
+        }
     }
 
     public func tokenizerHelper(_ input: String) throws

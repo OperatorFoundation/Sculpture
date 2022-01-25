@@ -108,6 +108,29 @@ public struct ClockworkFunction
         self.shorthand = shorthand
         self.implementation = implementation
     }
+
+//    public init?(_ lexicon: SymbolLexicon)
+//    {
+//
+//    }
+}
+
+public struct ClockworkCall
+{
+    let name: Word
+    let arguments: SymbolLexicon
+
+    public init?(_ lexicon: SymbolLexicon)
+    {
+        // FIXME
+        return nil
+    }
+
+    public init(_ name: Word, _ arguments: SymbolLexicon)
+    {
+        self.name = name
+        self.arguments = arguments
+    }
 }
 
 public struct ClockworkOperator
