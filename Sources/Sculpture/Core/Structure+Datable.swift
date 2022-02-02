@@ -72,6 +72,7 @@ enum BasicTypes: UInt8
     case string  = 13
     case bytes   = 14
     case boolean = 15
+    case float   = 16
 }
 
 enum Optionals: UInt8

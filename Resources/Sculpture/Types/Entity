@@ -1,5 +1,1 @@
-type.choice
-	type: Type
-	value: Value
-	flow: Flow
-	relation: Relation
+choice Type Value Flow Relation

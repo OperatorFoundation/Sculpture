@@ -289,6 +289,9 @@ extension BasicValue: MaybeDatable
                     default:
                         return nil
                 }
+            case .float:
+                guard let float = Float(data: value) else {return nil}
+                self = .float(float)
         }
     }
 
@@ -324,6 +327,10 @@ extension BasicValue: MaybeDatable
                     case false:
                         result.append(0)
                 }
+                return result
+            case .float(let float):
+                result.append(BasicTypes.float.rawValue.maybeNetworkData!)
+                result.append(float.data) // FIXME this is wrong, it has local endianness
                 return result
         }
     }

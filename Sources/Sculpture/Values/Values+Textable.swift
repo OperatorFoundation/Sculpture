@@ -184,6 +184,8 @@ extension LiteralValue: Textable
                             case false:
                                 return .line(Line(name: "boolean", parameters: ["false"]))
                         }
+                    case .float(let value):
+                        return .line(Line(name: "float", parameters: [value.description]))
                 }
             case .cryptographic(let type):
                 switch type

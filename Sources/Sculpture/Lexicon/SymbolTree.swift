@@ -7,6 +7,7 @@
 
 import Foundation
 import Datable
+import Rainbow
 
 public enum SymbolTrees: UInt8, MaybeDatable
 {
@@ -37,9 +38,7 @@ extension SymbolTree
     {
         if lens.isEmpty
         {
-            // Empty path requires a symbol
-            guard let result = self.atom else {return nil}
-            return .atom(result)
+            return self
         }
         else
         {
@@ -52,7 +51,7 @@ extension SymbolTree
                     guard let subtree = tree.get(key: word) else {return nil}
                     return subtree.get(lens: newLens)
                 case .index(let index):
-                    guard let int = index.int else {return nil}
+                    let int = index.int
                     guard let subtree = tree.get(index: int) else {return nil}
                     return subtree.get(lens: newLens)
             }
@@ -90,7 +89,7 @@ extension SymbolTree
                     return .lexicon(lex)
 
                 case .index(let index):
-                    guard let int = index.int else {return nil}
+                    let int = index.int
                     guard let subtree = lex.get(index: int) else {return nil}
                     guard let newSubtree = subtree.set(newLens, newTree) else {return nil}
                     guard lex.set(index: int, value: newSubtree) else {return nil}
@@ -204,5 +203,36 @@ extension SymbolTree: CustomStringConvertible
         }
 
         return result
+    }
+
+    public func display(_ first: Bool = false)
+    {
+        switch self
+        {
+            case .atom(let atom):
+                switch atom
+                {
+                    case .word(let word):
+                        if first
+                        {
+                            print(word.string.green, terminator: "")
+                            print(" ", terminator: "")
+                        }
+                        else
+                        {
+                            print(word.string.lightGreen, terminator: "")
+                            print(" ", terminator: "")
+                        }
+                    case .number(let number):
+                        print(number.string.blue, terminator: "")
+                        print(" ", terminator: "")
+                    case .data(let data):
+                        print("0x".lightRed, terminator: "")
+                        print(data.hex.red, terminator: "")
+                        print(" ", terminator: "")
+                }
+            case .lexicon(let lexicon):
+                lexicon.display()
+        }
     }
 }

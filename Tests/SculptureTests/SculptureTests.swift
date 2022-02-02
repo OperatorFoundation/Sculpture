@@ -853,7 +853,7 @@ final class SculptureTests: XCTestCase {
 
     public func testSymbolicResources() throws
     {
-        let path = "/Users/brandon/Sculpture/Resources/Sculpture/Types"
+        let path = "/Users/dr.brandonwiley/Sculpture/Resources/Sculpture/Types"
         guard let files = File.contentsOfDirectory(atPath: path) else
         {
             XCTFail()
@@ -926,7 +926,7 @@ final class SculptureTests: XCTestCase {
 
         let lexicon = try SymbolLexicon(top: parser.top.trees!)
         let symbols = SymbolTree.lexicon(lexicon)
-        print(symbols.description)
+        symbols.display()
 
 //        let unparser = try Parser(symbols)
 //        let result = unparser.string
@@ -949,5 +949,143 @@ final class SculptureTests: XCTestCase {
 //        {
 //            XCTAssertEqual(result, correctResult)
 //        }
+    }
+
+    public func testBasicStructuralTypingResources() throws
+    {
+        let path = "/Users/dr.brandonwiley/Sculpture/Resources/Sculpture/BasicValues"
+        let typepath = "/Users/dr.brandonwiley/Sculpture/Resources/Sculpture/ValueTypes"
+
+        guard let files = File.contentsOfDirectory(atPath: path) else
+        {
+            XCTFail()
+            return
+        }
+
+        for file in files
+        {
+            let filepath = path + "/" + file
+            let data = try Data(contentsOf: URL(fileURLWithPath: filepath))
+            let string = data.string
+            print(filepath)
+            print(string)
+
+            let typefilepath = typepath + "/" + file
+            let typedata = try Data(contentsOf: URL(fileURLWithPath: typefilepath))
+            let typestring = typedata.string
+            print(typefilepath)
+            print(typestring)
+
+            try basicHelper(string, typestring)
+        }
+    }
+
+    public func basicHelper(_ input: String, _ type: String) throws
+    {
+        let parser = try Parser(input)
+        let lexicon = try SymbolLexicon(top: parser.top.trees!)
+        let symbols = SymbolTree.lexicon(lexicon)
+        let focus = try Focus<SymbolTree>(tree: symbols)
+        let valueFocus = try focus.narrow(.index(Index(0)!)).narrow(.index(Index(0)))
+        symbols.display()
+
+        let typeparser = try Parser(type)
+        let typelexicon = try SymbolLexicon(top: typeparser.top.trees!)
+        let typesymbols = SymbolTree.lexicon(typelexicon)
+        let typefocus = try Focus<SymbolTree>(tree: typesymbols)
+        let literalFocus = try typefocus.narrow(.index(Index(0)!)).narrow(.index(Index(0)!))
+        typesymbols.display()
+
+        let maybeLiteral = try LiteralType(focus: literalFocus)
+        XCTAssertNotNil(maybeLiteral)
+        guard let literal = maybeLiteral else {return}
+        let result = try literal.check(context: typefocus, value: valueFocus)
+        print("result: \(result) for \(symbols.description) : \(typesymbols.description)")
+
+        XCTAssertTrue(result)
+    }
+
+    public func testStructuralTypingResources() throws
+    {
+        let path = "/Users/dr.brandonwiley/Sculpture/Resources/Sculpture/StructuralValues"
+        let typepath = "/Users/dr.brandonwiley/Sculpture/Resources/Sculpture/ValueTypes"
+
+        guard let files = File.contentsOfDirectory(atPath: path) else
+        {
+            XCTFail()
+            return
+        }
+
+        for file in files
+        {
+            let filepath = path + "/" + file
+            let data = try Data(contentsOf: URL(fileURLWithPath: filepath))
+            let string = data.string
+            print(filepath)
+            print(string)
+
+            let typefilepath = typepath + "/" + file
+            let typedata = try Data(contentsOf: URL(fileURLWithPath: typefilepath))
+            let typestring = typedata.string
+            print(typefilepath)
+            print(typestring)
+
+            try structuralHelper(string, typestring)
+        }
+    }
+
+    public func testStructuralTyping() throws
+    {
+        try structuralHelper("0\n", "basic.int\n")
+        try structuralHelper("0\n", "basic.float\n")
+        try structuralHelper("0xFF\n", "basic.data\n")
+        try structuralHelper("0 1\n", "structure basic.int basic.int\n")
+        try structuralHelper("0 1\n", "sequence basic.int\n")
+        try structuralHelper("0\n", "choice basic.int\n\tsequence basic.int\n")
+    }
+
+    public func structuralHelper(_ input: String, _ type: String) throws
+    {
+        let parser = try Parser(input)
+        let lexicon = try SymbolLexicon(top: parser.top.trees!)
+        let symbols = SymbolTree.lexicon(lexicon)
+        let focus = try Focus<SymbolTree>(tree: symbols)
+        var valueFocus = try focus.narrow(.index(Index(0)!))
+        if try valueFocus.count() == 1
+        {
+            valueFocus = try valueFocus.narrow(.index(Index(0)!))
+        }
+        symbols.display()
+        print()
+
+        let typeparser = try Parser(type)
+        let typelexicon = try SymbolLexicon(top: typeparser.top.trees!)
+        let typesymbols = SymbolTree.lexicon(typelexicon)
+        let typefocus = try Focus<SymbolTree>(tree: typesymbols)
+        var literalFocus = try typefocus.narrow(.index(Index(0)!))
+        if try literalFocus.count() == 1
+        {
+            literalFocus = try literalFocus.narrow(.index(Index(0)!))
+        }
+        typesymbols.display()
+        print()
+
+        do
+        {
+            let maybeLiteral = try LiteralType(focus: literalFocus)
+            XCTAssertNotNil(maybeLiteral)
+            guard let literal = maybeLiteral else
+            {
+                return
+            }
+            let result = try literal.check(context: literalFocus, value: valueFocus)
+            print("result: \(result) for \(symbols.description) : \(typesymbols.description)")
+
+            XCTAssertTrue(result)
+        }
+        catch
+        {
+            print(error)
+        }
     }
 }

@@ -8,53 +8,6 @@
 import Foundation
 
 typealias SymbolLens = Lens<SymbolTree>
-//public struct SymbolLens
-//{
-//    public let path: [Symbol]
-//
-//    public var isEmpty: Bool
-//    {
-//        return self.path.isEmpty
-//    }
-//
-//    public init()
-//    {
-//        self.path = []
-//    }
-//
-//    public init(_ path: [Symbol])
-//    {
-//        self.path = path
-//    }
-//
-//    public func pop() -> (Symbol, SymbolLens)?
-//    {
-//        guard let symbol = self.path.first else {return nil}
-//        let rest = [Symbol](self.path.dropFirst())
-//        return (symbol, SymbolLens(rest))
-//    }
-//
-//    public func narrow(_ symbol: Symbol) -> SymbolLens
-//    {
-//        var newPath = self.path
-//        newPath.append(symbol)
-//
-//        return SymbolLens(newPath)
-//    }
-//
-//    public func broaden() -> SymbolLens
-//    {
-//        var newPath = self.path
-//        newPath.remove(at: newPath.count-1)
-//
-//        return SymbolLens(newPath)
-//    }
-//
-//    public func focus(_ tree: SymbolTree) -> Focus<SymbolTree>?
-//    {
-//        return Focus<SymbolTree>(lens: self, tree: tree)
-//    }
-//}
 
 extension SymbolTree: Target
 {
@@ -80,7 +33,7 @@ extension SymbolTree: Target
                             guard let value = lexicon.get(key: word) else {throw LensError.badLens(lens)}
                             return try value.get(lens: newLens)
                         case .index(let index):
-                            guard let int = index.int else {throw LensError.badLens(lens)}
+                            let int = index.int
                             guard let value = lexicon.get(index: int) else {throw LensError.badLens(lens)}
                             return try value.get(lens: newLens)
                     }
@@ -117,7 +70,7 @@ extension SymbolTree: Target
                 case .word(let word):
                     maybeSubtree = lexicon.get(key: word)
                 case .index(let index):
-                    guard let int = index.int else {throw LensError.badLens(lens)}
+                    let int = index.int
                     maybeSubtree = lexicon.get(index: int)
             }
             guard let subtree = maybeSubtree else {throw LensError.badLens(lens)}
@@ -128,7 +81,7 @@ extension SymbolTree: Target
                 case .word(let word):
                     guard lexicon.set(key: word, value: newSubtree) else {throw LensError.badLens(lens)}
                 case .index(let index):
-                    guard let int = index.int else {throw LensError.badLens(lens)}
+                    let int = index.int
                     guard lexicon.set(index: int, key: nil, value: newSubtree) else {throw LensError.badLens(lens)}
             }
 
@@ -151,70 +104,3 @@ extension SymbolTree: Target
 }
 
 typealias SymbolFocus = Focus<SymbolTree>
-
-//public struct SymbolFocus
-//{
-//    let lens: SymbolLens
-//    let tree: SymbolTree
-//
-//    public init?(tree: SymbolTree)
-//    {
-//        self.tree = tree
-//
-//        self.lens = SymbolLens()
-//
-//        guard self.isValid() else {return nil}
-//    }
-//
-//    public init?(lens: SymbolLens, tree: SymbolTree)
-//    {
-//        self.lens = lens
-//        self.tree = tree
-//
-//        guard self.isValid() else {return nil}
-//    }
-//
-//    public func get() -> SymbolTree?
-//    {
-//        return self.tree.get(self.lens)
-//    }
-//
-//    public func set(_ tree: SymbolTree) -> SymbolTree?
-//    {
-//        return self.tree.set(self.lens, tree)
-//    }
-//
-//    public func count() -> Int?
-//    {
-//        return self.tree.count(self.lens)
-//    }
-//
-//    public func isAtom() -> Bool?
-//    {
-//        return self.tree.isAtom(self.lens)
-//    }
-//
-//    public func isValid() -> Bool
-//    {
-//        return self.get() != nil
-//    }
-//
-//    public func narrow(_ symbol: Symbol) -> SymbolFocus?
-//    {
-//        let newLens = self.lens.narrow(symbol)
-//        guard let newFocus = SymbolFocus(lens: newLens, tree: self.tree) else {return nil}
-//        return newFocus
-//    }
-//
-//    public func broaden() -> SymbolFocus?
-//    {
-//        let newLens = self.lens.broaden()
-//        guard let newFocus = SymbolFocus(lens: newLens, tree: self.tree) else {return nil}
-//        return newFocus
-//    }
-//
-//    public func unfocus() -> SymbolLens
-//    {
-//        return self.lens
-//    }
-//}

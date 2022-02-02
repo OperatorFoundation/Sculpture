@@ -1,6 +1,1 @@
-type.choice
-	int: type.basic.int
-	string: type.basic.string
-	uint: type.basic.uint
-	bytes: type.basic.bytes
-	boolean: type.basic.bool
+choice Data SignedInteger FloatingPoint

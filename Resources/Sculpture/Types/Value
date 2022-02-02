@@ -1,1 +1,1 @@
-type.sum LiteralValue ReferenceValue NamedReferenceValue
+choice LiteralValue ReferenceValue NamedReferenceValue

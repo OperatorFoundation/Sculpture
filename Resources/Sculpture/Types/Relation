@@ -1,4 +1,1 @@
-type.choice
-	inherits: Inherits
-	implements: Implements
-	encapuslates: Enscapsulates
+choice Inherits Implements Enscapsulates

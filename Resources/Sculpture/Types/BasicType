@@ -1,1 +1,1 @@
-type.choice Data SignedInteger FloatingPoint
+choice Data SignedInteger FloatingPoint

@@ -94,6 +94,12 @@ extension LiteralType: Textable
                 case "string":
                     self = .basic(.string)
                     return
+                case "bytes":
+                    self = .basic(.bytes)
+                    return
+                case "float":
+                    self = .basic(.float)
+                    return
                 default:
                     return nil
             }
@@ -173,6 +179,8 @@ extension LiteralType: Textable
                         return .line(Line(name: "basic", parameters: ["bytes"]))
                     case .boolean:
                         return .line(Line(name: "basic", parameters: ["boolean"]))
+                    case .float:
+                        return .line(Line(name: "basic", parameters: ["float"]))
                 }
             case .cryptographic(let type):
                 switch type

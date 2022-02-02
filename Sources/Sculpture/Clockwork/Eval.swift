@@ -83,8 +83,8 @@ extension Program
             case .atom(let atom):
                 switch atom
                 {
-                    case .word(let word):
-                        let lexicon = SymbolLexicon(word)
+                    case .word(_):
+                        let lexicon = SymbolLexicon(elements: [(nil, tree)])
                         var newLexicon = SymbolLexicon()
                         try Lexicon<Word,SymbolTree,Word>.merge(input: builtins, output: &newLexicon)
                         try Lexicon<Word,SymbolTree,Word>.merge(input: lexicon, output: &newLexicon)
@@ -99,7 +99,7 @@ extension Program
                             return (nil, events, effects)
                         }
                     default:
-                        let newLexicon = SymbolLexicon(nil, elements: [(nil, tree)])
+                        let newLexicon = SymbolLexicon(elements: [(nil, tree)])
                         let (maybeResultLexicon, events, effects) = try self.eval(lexicon: newLexicon)
                         if let resultLexicon = maybeResultLexicon
                         {
@@ -172,54 +172,54 @@ extension Program
 
     public func eval(lexicon: SymbolLexicon) throws -> (SymbolLexicon?, [Event], [Effect])
     {
-        if let head = lexicon.head
-        {
-            // Dereference the binding
-            guard let value = lexicon.get(key: head) else {throw EvalError.unknownSymbol(head)}
-
-            switch value
-            {
-                case .atom(let subatom):
-                    switch subatom
-                    {
-                        // Head is word
-                        case .word(let word):
-                            // New head
-                            let elements = lexicon.elements()
-                            let result = SymbolLexicon(word, elements: elements)
-                            return try self.eval(lexicon: result)
-                        // Head is number or data
-                        default:
-                            // Non-words cannot be head
-                            var elements = lexicon.elements()
-                            elements.insert((nil, value), at: 0)
-                            let result = SymbolLexicon(nil, elements: elements)
-                            return try self.eval(lexicon: result)
-                    }
-                case .lexicon(let sublexicon):
-                    // Head is lexicon, could be a function
-                    if let call = ClockworkCall(sublexicon)
-                    {
-                        // Head is a function
-
-                    }
-                    else
-                    {
-                        // Head is not a function
-                        // Non-words cannot be head
-                        var elements = lexicon.elements()
-                        elements.insert((nil, value), at: 0)
-                        let result = SymbolLexicon(nil, elements: elements)
-                        return try self.eval(lexicon: result)
-                    }
-            }
-        }
-
-        for (maybeKey, value) in lexicon.elements()
-        {
-            // Skip evaluating bindings
-            guard maybeKey == nil else {continue}
-        }
+//        if let (maybeValue, rest) = lexicon.split, let value = maybeValue
+//        {
+//            // Dereference the binding
+//            guard let value = lexicon.get(key: head) else {throw EvalError.unknownSymbol(head)}
+//
+//            switch value
+//            {
+//                case .atom(let subatom):
+//                    switch subatom
+//                    {
+//                        // Head is word
+//                        case .word(_):
+//                            // New head
+//                            let elements = lexicon.elements()
+//                            let result = SymbolLexicon(elements: [(nil, value)] + elements)
+//                            return try self.eval(lexicon: result)
+//                        // Head is number or data
+//                        default:
+//                            // Non-words cannot be head
+//                            var elements = lexicon.elements()
+//                            elements.insert((nil, value), at: 0)
+//                            let result = SymbolLexicon(elements: elements)
+//                            return try self.eval(lexicon: result)
+//                    }
+//                case .lexicon(let sublexicon):
+//                    // Head is lexicon, could be a function
+//                    if let call = ClockworkCall(sublexicon)
+//                    {
+//                        // Head is a function
+//
+//                    }
+//                    else
+//                    {
+//                        // Head is not a function
+//                        // Non-words cannot be head
+//                        var elements = lexicon.elements()
+//                        elements.insert((nil, value), at: 0)
+//                        let result = SymbolLexicon(elements: elements)
+//                        return try self.eval(lexicon: result)
+//                    }
+//            }
+//        }
+//
+//        for (maybeKey, value) in lexicon.elements()
+//        {
+//            // Skip evaluating bindings
+//            guard maybeKey == nil else {continue}
+//        }
 
         return (nil, [], [])
     }

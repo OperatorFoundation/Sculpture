@@ -281,10 +281,21 @@ public struct Word: Codable, Hashable, Equatable
 public struct Index: Codable, Equatable, Hashable
 {
     public let string: String
+    public let uint64: UInt64
+    public let int: Int
 
-    public var int: Int?
+    public init?(_ int: Int)
     {
-        return Int(string: self.string)
+        self.int = int
+        self.uint64 = UInt64(int)
+        self.string = int.string
+    }
+
+    public init(_ uint64: UInt64)
+    {
+        self.uint64 = uint64
+        self.int = Int(self.uint64)
+        self.string = self.uint64.string
     }
 
     public init?(_ string: String)
@@ -297,6 +308,8 @@ public struct Index: Codable, Equatable, Hashable
         }
 
         self.string = string
+        self.uint64 = UInt64(string: string)
+        self.int = Int(self.uint64)
     }
 
     public var data: Data

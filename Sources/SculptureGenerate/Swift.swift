@@ -88,6 +88,8 @@ public func basicTypeSource(basic: BasicType) -> String
             return "Data"
         case .boolean:
             return "Bool"
+        case .float:
+            return "Float"
     }
 }
 

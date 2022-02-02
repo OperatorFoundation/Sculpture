@@ -7,14 +7,33 @@
 
 import Foundation
 import Abacus
-import AST
+import Rainbow
 
 public typealias SymbolLexicon = Lexicon<Word,SymbolTree,Word>
 
+public func resolve(context: Focus<SymbolTree>, symbol: Word) throws -> Focus<SymbolTree>?
+{
+    let tree = try context.get()
+    switch tree
+    {
+        case .atom(_):
+            let newFocus = try context.broaden()
+            return try resolve(context: newFocus, symbol: symbol)
+        case .lexicon(_):
+            if let newFocus = try? context.narrow(.word(symbol))
+            {
+                return newFocus
+            }
+            else
+            {
+                let newFocus = try context.broaden()
+                return try resolve(context: newFocus, symbol: symbol)
+            }
+    }
+}
+
 extension SymbolLexicon
 {
-    // Top level, each subtree in top may or may not contain a head
-    // However, the list of trees does not itself have a head.
     public convenience init(top: [ParserTree]) throws
     {
         // Convert each top-level tree into an element
@@ -40,8 +59,8 @@ extension SymbolLexicon
                     case .atomicValue(let value):
                         switch value
                         {
-                            case .word(let word):
-                                let lexicon = try SymbolLexicon(head: word, trees: rest)
+                            case .word(_):
+                                let lexicon = try SymbolLexicon(trees: subtrees)
                                 return (nil, .lexicon(lexicon))
                             case .number(_):
                                 let lexicon = try SymbolLexicon(trees: subtrees)
@@ -69,15 +88,6 @@ extension SymbolLexicon
         return
     }
 
-    // Explicit head, trees do not contain a head
-    public convenience init(head: Word, trees: [ParserTree]) throws
-    {
-        let elements = try SymbolLexicon.treesToElements(trees)
-        self.init(head, elements: elements)
-        return
-    }
-
-    // Implicit head, trees list may or may not have a head.
     public convenience init(trees: [ParserTree]) throws
     {
         // A top-level subtree can be a list or a binding
@@ -91,17 +101,10 @@ extension SymbolLexicon
 
             switch type
             {
-                case .atomicValue(let value):
-                    switch value
-                    {
-                        case .word(let word):
-                            try self.init(head: word, trees: rest)
-                            return
-                        default:
-                            let elements = try SymbolLexicon.treesToElements(trees)
-                            self.init(nil, elements: elements)
-                            return
-                    }
+                case .atomicValue(_):
+                    let elements = try SymbolLexicon.treesToElements(trees)
+                    self.init(elements: elements)
+                    return
                 case .bindingSymbol(let binding):
                     var elements = try SymbolLexicon.treesToElements(rest)
                     let (_, value) = elements[0]
@@ -145,12 +148,6 @@ extension SymbolLexicon: CustomStringConvertible
     {
         var result: String = ""
 
-        if let head = self.head
-        {
-            result.append(head.string)
-            result.append("~")
-        }
-
         result.append("(")
         for (maybeWord, tree) in self.elements()
         {
@@ -166,6 +163,25 @@ extension SymbolLexicon: CustomStringConvertible
         result.append(")")
 
         return result
+    }
+
+    public func display()
+    {
+        print("(".lightYellow, terminator: "")
+        var first = true
+        for (maybeWord, tree) in self.elements()
+        {
+            if let word = maybeWord
+            {
+                print(word.string.magenta, terminator: "")
+                print(":".lightMagenta, terminator: "")
+                print(" ", terminator: "")
+            }
+
+            tree.display(first)
+            if first {first = false}
+        }
+        print(")".lightYellow, terminator: "")
     }
 }
 

@@ -47,24 +47,6 @@ extension SymbolLexicon
         var result = ""
         var inline = inline
 
-        if let head = self.head
-        {
-            if inline
-            {
-                result.append(" ")
-            }
-            else
-            {
-                for _ in 0..<depth
-                {
-                    result.append("\t")
-                }
-            }
-
-            result.append(head.string)
-            inline = true
-        }
-
         for (maybeWord, tree) in self.elements()
         {
             if inline

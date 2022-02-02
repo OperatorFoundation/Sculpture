@@ -311,6 +311,8 @@ extension BasicType: MaybeDatable
                 self = .bytes
             case .boolean:
                 self = .boolean
+            case .float:
+                self = .float
         }
     }
 
@@ -328,6 +330,8 @@ extension BasicType: MaybeDatable
                 return BasicTypes.bytes.rawValue.data
             case .boolean:
                 return BasicTypes.boolean.rawValue.data
+            case .float:
+                return BasicTypes.float.rawValue.data
         }
     }
 }

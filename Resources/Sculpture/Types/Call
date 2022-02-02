@@ -1,5 +1,1 @@
-type.structure
-	identifier: SignedInteger
-	target: Value
-	selector: Selector
-	arguments: Sequence
+structure SignedInteger Value Selector Sequence

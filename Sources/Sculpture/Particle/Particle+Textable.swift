@@ -40,16 +40,16 @@ func escape(_ string: String) -> String
     }
 }
 
-func unescape(_ string: String) -> String?
+func unescape(_ string: String) -> Data?
 {
     if string.starts(with: "0x")
     {
         let substring = String(string[string.index(string.startIndex, offsetBy: 2)..<string.endIndex])
         guard let data = Data(hex: substring) else {return nil}
-        return data.string
+        return data
     }
     else
     {
-        return string
+        return string.data
     }
 }
